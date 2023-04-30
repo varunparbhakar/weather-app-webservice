@@ -8,8 +8,8 @@
     "url": "https://github.com/varunparbhakar/varpar-tcss450-labs"
   },
   "scripts": {
-    "dev": "export NODE_ENV=dev|| set NODE_ENV=dev&& node index.js",
-    "local": "export NODE_ENV=local|| set NODE_ENV=local&& node index.js"
+    "dev": "set NODE_ENV=dev&& node index.js",
+    "local": "set NODE_ENV=local&& node index.js"
   },
   "keywords": [
     "TCSS450",

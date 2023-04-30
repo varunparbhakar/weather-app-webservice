@@ -16,7 +16,6 @@ router.get("/", (request, response) => {
     message: "Hello, you sent a GET request",
   });
 });
-app.use('/hello', require('./routes/hello.js'))
 /**
  * @api {post} /hello Request a Hello World message
  * @apiName PostHello
