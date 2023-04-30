@@ -29,6 +29,7 @@ app.use('/params', require('./routes/params.js'));
  * Create a web page in HTML/CSS and have this end point return it.
  * Look up the node module 'fs' ex: require('fs');
  */
+ app.use('/auth', require('./routes/register.js'));
  app.use('/demosql', require('./routes/demosql.js'));
 app.get("/", (request, response) => {
   //this is a Web page so set the content-type to HTML
