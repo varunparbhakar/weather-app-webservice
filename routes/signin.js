@@ -109,6 +109,7 @@ router.get(
         //Did our salted hash match their salted hash?
         if (storedSaltedHash === providedSaltedHash) {
           //credentials match. get a new JWT
+
           let token = jwt.sign(
             {
               email: request.auth.email,
