@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cfb3/tcss-450-web-service-starter"
+    "url": "https://github.com/varunparbhakar/varpar-tcss450-labs"
   },
   "scripts": {
     "dev": "export NODE_ENV=dev|| set NODE_ENV=dev&& node index.js",
