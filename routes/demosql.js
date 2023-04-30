@@ -188,7 +188,7 @@ router.put("/", (request, response) => {
  *
  * @apiUse JSONError
  */
-router.delete("/:name", (request, response) => {
+router.delete("/:name?", (request, response) => {
   if (isStringProvided(request.params.name)) {
     const theQuery = "DELETE FROM Demo  WHERE name = $1 RETURNING *";
     const values = [request.params.name];
