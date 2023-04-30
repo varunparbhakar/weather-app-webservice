@@ -31,6 +31,7 @@ app.use('/params', require('./routes/params.js'));
  */
  app.use('/auth', require('./routes/register.js'));
  app.use('/demosql', require('./routes/demosql.js'));
+ app.use('/auth', require('./routes/signin.js'));
 app.get("/", (request, response) => {
   //this is a Web page so set the content-type to HTML
   response.writeHead(200, { "Content-Type": "text/html" });
