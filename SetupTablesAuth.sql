@@ -14,13 +14,3 @@ CREATE TABLE Credentials (CredentialID SERIAL PRIMARY KEY,
                       SALT VARCHAR(255),
                       FOREIGN KEY(MemberID) REFERENCES Members(MemberID)
 );
-
-
-
-
-
-
-
-
-
-
