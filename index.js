@@ -28,8 +28,8 @@ app.use(middleware.jsonErrorInBody);
  * Create a web page in HTML/CSS and have this end point return it.
  * Look up the node module 'fs' ex: require('fs');
  */
-app.use('/hello', require('./routes/hello.js'));
-app.use('/params', require('./routes/params.js'));
+ app.use('/hello', require('./routes/hello.js'));
+ app.use('/params', require('./routes/params.js'));
  app.use('/demosql', require('./routes/demosql.js'));
  app.use('/auth', require('./routes/signin.js'));
  app.use('/auth', require('./routes/register.js'));
