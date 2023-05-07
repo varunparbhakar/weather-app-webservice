@@ -148,7 +148,7 @@ router.post(
       });
   }
 );
-router.get("/info/:id", (req, res)=> {
+router.get("/:id", (req, res)=> {
     const id = req.params.id;
     let theQuery =
           'SELECT name From members WHERE id = $1;
