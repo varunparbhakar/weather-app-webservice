@@ -46,9 +46,9 @@ const router = express.Router();
 router.post(
   "/",
   (request, response, next) => {
-    request.body.username = isStringProvided(request.body.username)
-      ? request.body.username
-      : request.body.email;
+    // request.body.username = isStringProvided(request.body.username)
+    //   ? request.body.username
+    //   : request.body.email;
 
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false

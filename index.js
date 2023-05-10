@@ -33,7 +33,7 @@ app.use(middleware.jsonErrorInBody);
  app.use('/demosql', require('./routes/demosql.js'));
  app.use('/auth', require('./routes/signin.js'));
  app.use('/auth', require('./routes/register.js'));
-//  app.use('/info', require('./routes/info.js'));
+ app.use('/info', require('./routes/info.js'));
  app.use("/doc", express.static('apidoc'))
  app.get("/", (request, response) => {
   //this is a Web page so set the content-type to HTML

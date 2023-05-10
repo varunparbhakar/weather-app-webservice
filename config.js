@@ -21,4 +21,3 @@ module.exports = {
         },
         JSON_WEB_TOKEN: process.env.JSON_WEB_TOKEN || undefined
 };
-console.log(process.env.DATABASE_URL);
