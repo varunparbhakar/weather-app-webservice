@@ -35,6 +35,8 @@ app.use(middleware.jsonErrorInBody);
  app.use('/auth', require('./routes/register.js'));
  app.use('/info', require('./routes/info.js'));
  app.use("/doc", express.static('apidoc'))
+ app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
+ app.use('/chats', middleware.checkToken, require('./routes/chats.js'))
  app.get("/", (request, response) => {
   //this is a Web page so set the content-type to HTML
   response.writeHead(200, { "Content-Type": "text/html" });
