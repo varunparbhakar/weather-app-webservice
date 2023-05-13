@@ -13,7 +13,7 @@ const sendEmail = require("../utilities").sendEmail;
 
 const router = express.Router();
 
-router.get("/", (request, response) => {
+router.post("/", (request, response) => {
     if (isStringProvided(request.body.email)) {
         pool.query(`SELECT * from members where email = $1`, [request.body.email])
             .then((result) => {
