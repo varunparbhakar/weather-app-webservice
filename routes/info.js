@@ -15,18 +15,19 @@ const router = express.Router();
 
 router.get("/", (request, response) => {
     if (isStringProvided(request.body.email)) {
-        pool
-            .query(`SELECT * from members where email = $1`, [request.body.email])
+        pool.query(`SELECT * from members where email = $1`, [request.body.email])
             .then((result) => {
                 // stash the memberid into the request object to be used in the next function
-
                 // next();
                 response.send(result.rows[0]);
+                console.log(result.rows[0].length == 0);
             })
             .catch((error) => {
+                console.log([request.body.email])
+                console.log(error)
                 response.status(500).send({
                     message: "Internal Server Error",
-                    error: error,
+                    error: error.detail,
                 });
             });
     } else {
