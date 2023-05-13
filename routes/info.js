@@ -14,21 +14,26 @@ const sendEmail = require("../utilities").sendEmail;
 const router = express.Router();
 
 router.get("/", (request, response) => {
-  if (isStringProvided(request.body.id)) {
-    pool
-        .query(`SELECT * from members where memberid = $1`, [request.body.id])
-        .then((result) => {
-          //stash the memberid into the request object to be used in the next function
-          console.log(result.rows[0]);
-          // next();
-          response.send(result.rows[0]);
-        })
+    if (isStringProvided(request.body.email)) {
+        pool
+            .query(`SELECT * from members where email = $1`, [request.body.email])
+            .then((result) => {
+                // stash the memberid into the request object to be used in the next function
 
-  } else {
-    response.status(400).send({
-      message: "Missing required information",
-    });
-  }
+                // next();
+                response.send(result.rows[0]);
+            })
+            .catch((error) => {
+                response.status(500).send({
+                    message: "Internal Server Error",
+                    error: error,
+                });
+            });
+    } else {
+        response.status(400).send({
+            message: "Missing required information",
+        });
+    }
 });
 
 module.exports = router;
