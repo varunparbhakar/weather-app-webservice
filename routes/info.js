@@ -14,6 +14,7 @@ const sendEmail = require("../utilities").sendEmail;
 const router = express.Router();
 
 router.post("/", (request, response) => {
+    console.log(request.body);
     if (isStringProvided(request.body.email)) {
         pool.query(`SELECT * from members where email = $1`, [request.body.email])
             .then((result) => {
@@ -26,7 +27,7 @@ router.post("/", (request, response) => {
                 console.log([request.body.email])
                 console.log(error)
                 response.status(500).send({
-                    message: "Internal Server Error",
+                    message: "Error retriving member information",
                     error: error.detail,
                 });
             });

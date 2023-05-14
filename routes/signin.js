@@ -121,11 +121,36 @@ router.get(
             }
           );
           //package and send the results
-          response.json({
-            success: true,
-            message: "Authentication successful!",
-            token: token,
-          });
+
+            pool.query(`SELECT * from members where email = $1`, [request.auth.email])
+                .then((result) => {
+                    // stash the memberid into the request object to be used in the next function
+                    // next();
+
+                    response.json({
+                        success: true,
+                        message: "Authentication successful!",
+                        token: token,
+                        username: result.rows[0].username,
+                        firstname: result.rows[0].firstname,
+                        lastname: result.rows[0].lastname,
+                    });
+                    // console.log(result.rows[0]);
+                })
+                .catch((error) => {
+                    console.log([request.auth.email])
+                    console.log(error)
+                    response.status(500).send({
+                        message: "Error retriving member information",
+                        error: error.detail,
+                    });
+                });
+
+
+
+
+
+
         } else {
           //credentials dod not match
           response.status(400).send({
