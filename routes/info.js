@@ -20,7 +20,7 @@ router.post("/", (request, response) => {
                 // stash the memberid into the request object to be used in the next function
                 // next();
                 response.send(result.rows[0]);
-                console.log(result.rows[0].length == 0);
+                // console.log(result.rows[0]);
             })
             .catch((error) => {
                 console.log([request.body.email])
