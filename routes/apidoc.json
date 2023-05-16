@@ -1,9 +1,9 @@
 {
-    "name": "TCSS 450 Lab Web Service",
+    "name": "TCSS 450 Weather Chat App",
     "version": "0.1.0",
-    "description": "The TCSS 450 Lab Web Service API Documentation",
-    "title": "Lab API Doc",
-    "url" : "localhost:5000",
+    "description": "Web service documentation for TCSS 450 Weather Chat App.",
+    "title": "The Weather App",
+    "url" : "https://theweatherapp.herokuapp.com",
     "order": [
       "Hello",
       "Params",

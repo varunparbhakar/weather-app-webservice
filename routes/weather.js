@@ -22,7 +22,9 @@ async function fetchAsync (u) {
  *
  * @apiDescription Gets weather for a specific zipcode for user.
  *
- * @apiParam {String} zipcode for weather retrieval
+ * @apiParam {String} Required: zipcode Location for weather retrieval
+ * 
+ * @apiParam {int} days Optional: Amount of days to retrieve, between 1 and 5 inclusive. Default 5.
  *
  * @apiSuccess (Success 200) {boolean} success true when the name is inserted
  *
