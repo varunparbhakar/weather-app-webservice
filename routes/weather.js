@@ -31,8 +31,6 @@ async function fetchAsync (u) {
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * 
  * @apiError (400: External Service Error) {String} message "External weather service error"
- *
- * @apiUse JSONError
  */
 router.get("/", (request, response, next) => {
     if (isStringProvided(request.query.zipcode)) {
