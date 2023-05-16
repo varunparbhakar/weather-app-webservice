@@ -131,6 +131,7 @@ router.get(
                         success: true,
                         message: "Authentication successful!",
                         token: token,
+                        email:result.rows[0].email,
                         username: result.rows[0].username,
                         firstname: result.rows[0].firstname,
                         lastname: result.rows[0].lastname,
@@ -141,7 +142,7 @@ router.get(
                     console.log([request.auth.email])
                     console.log(error)
                     response.status(500).send({
-                        message: "Error retriving member information",
+                        message: "Error retrieving member information",
                         error: error.detail,
                     });
                 });

@@ -34,6 +34,7 @@ app.use(middleware.jsonErrorInBody);
  app.use('/auth', require('./routes/signin.js'));
  app.use('/auth', require('./routes/register.js'));
  app.use('/info', require('./routes/info.js'));
+ app.use('/verify', require('./routes/verify.js'));
  app.use("/doc", express.static('apidoc'));
  app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
  app.use('/chats', middleware.checkToken, require('./routes/chats.js'))
