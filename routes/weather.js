@@ -45,7 +45,6 @@ router.get("/", (request, response, next) => {
 }, (request, response) => {
     let num = Number(request.query.days);
     let dayCount = (Number.isInteger(num) && num > 0 && num < 6) ? num : 5;
-
     let url = "http://api.weatherapi.com/v1/forecast.json?aqi=no&alerts=no&days=" + dayCount + "&key=" + WEATHER_API_KEY + "&q=" + request.query.zipcode;
     fetchAsync(url)
     .then(data => response.status(200).send(data))
