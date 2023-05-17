@@ -28,25 +28,25 @@ app.use(middleware.jsonErrorInBody);
  * Create a web page in HTML/CSS and have this end point return it.
  * Look up the node module 'fs' ex: require('fs');
  */
- app.use('/hello', require('./routes/hello.js'));
- app.use('/params', require('./routes/params.js'));
- app.use('/demosql', require('./routes/demosql.js'));
- app.use('/auth', require('./routes/signin.js'));
- app.use('/auth', require('./routes/register.js'));
- app.use('/info', require('./routes/info.js'));
- app.use('/verify', require('./routes/verify.js'));
- app.use("/doc", express.static('apidoc'));
- app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
- app.use('/chats', middleware.checkToken, require('./routes/chats.js'))
- app.use('/weather', require('./routes/weather.js'));
- app.get("/", (request, response) => {
-  //this is a Web page so set the content-type to HTML
-  response.writeHead(200, { "Content-Type": "text/html" });
-  for (i = 1; i < 7; i++) {
-    //write a response to the client
-    response.write("<h" + i + ' style="color:blue">Hello World!</h' + i + ">");
-  }
-  response.end(); //end the response
+app.use('/hello', require('./routes/hello.js'));
+app.use('/params', require('./routes/params.js'));
+app.use('/demosql', require('./routes/demosql.js'));
+app.use('/auth', require('./routes/signin.js'));
+app.use('/auth', require('./routes/register.js'));
+app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js'))
+app.use('/info', require('./routes/info.js'));
+app.use('/verify', require('./routes/verify.js'));
+app.use("/doc", express.static('apidoc'));
+app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
+app.use('/chats', middleware.checkToken, require('./routes/chats.js'))
+app.get("/", (request, response) => {
+ //this is a Web page so set the content-type to HTML
+ response.writeHead(200, { "Content-Type": "text/html" });
+ for (i = 1; i < 7; i++) {
+  //write a response to the client
+  response.write("<h" + i + ' style="color:blue">Hello World!</h' + i + ">");
+ }
+ response.end(); //end the response
 });
 
 
@@ -66,5 +66,5 @@ app.use(middleware.jsonErrorInBody);
  * if(port == null) {port = 5000}
  */
 app.listen(config.PORT || 5000, () => {
-  console.log("Server up and running on port: " + (config.PORT || 5000));
+ console.log("Server up and running on port: " + (config.PORT || 5000));
 });
