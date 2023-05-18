@@ -37,7 +37,7 @@ app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js'))
 app.use('/info', require('./routes/info.js'));
 app.use('/verify', require('./routes/verify.js'));
 app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
-app.use('/chats', middleware.checkToken, require('./routes/chats.js'))
+app.use('/chats', require('./routes/chats.js')) // TODO: Add middleware
 app.use('/weather', require('./routes/weather.js'));
 app.use('/contacts', middleware.checkToken, require('./routes/contacts.js'));
 
