@@ -206,9 +206,7 @@ router.put("/:chatId/", (request, response, next) => {
  * @apiUse JSONError
  */
 router.get("/memberId=:memberId", (request, response, next) => {
-
     let num = Number(request.params.memberId);
-
     //validate on missing or invalid (type) parameters
     if (!num) {
         response.status(400).send({
@@ -222,11 +220,9 @@ router.get("/memberId=:memberId", (request, response, next) => {
         next();
     }
 },  (request, response, next) => {
-
     //get chat id
     let query = `SELECT chats.chatid FROM chats JOIN chatmembers ON chats.chatid = chatmembers.chatid WHERE memberid = $1`
     let values = [request.params.memberId]
-
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
@@ -245,11 +241,9 @@ router.get("/memberId=:memberId", (request, response, next) => {
         })
     })
 }, (request, response, next) => {
-
     //Retrieve the members
     let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId = $1`
     let values = [response.chatId]
-    
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
@@ -267,7 +261,6 @@ router.get("/memberId=:memberId", (request, response, next) => {
             })
         })
 }, (request, response) => {
-    
     //Retrieve the top message
     let query = `SELECT message FROM messages WHERE chatid = $1 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
     let values = [response.chatId];
@@ -311,7 +304,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
  *
  * @apiUse JSONError
  */
-router.get("/:chatId", (request, response, next) => {
+router.get("details/chatId=/:chatId", (request, response, next) => {
     //validate on missing or invalid (type) parameters
     if (!request.params.chatId) {
         response.status(400).send({
@@ -353,10 +346,28 @@ router.get("/:chatId", (request, response, next) => {
     let values = [request.params.chatId]
     pool.query(query, values)
         .then(result => {
-            response.send({
-                rowCount : result.rowCount,
-                rows: result.rows
-            })
+            response.emails = result.rows.map(row => row.email);
+            next();
+        }).catch(err => {
+        response.status(400).send({
+            message: "SQL Error",
+            error: err
+        })
+    })
+}, (request, response) => {
+    //Retrieve the top message
+    let query = `SELECT message FROM messages WHERE chatid = $1 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
+    let values = [response.chatId];
+
+    pool.query(query, values)
+        .then(result => {
+            response.topMessage = result.rows[0].message;
+            response.json({
+                success: true,
+                message: "get/chats email and top message successful!",
+                email: response.email,
+                topMessage: response.topMessage
+            });
         }).catch(err => {
         response.status(400).send({
             message: "SQL Error",
