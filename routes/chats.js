@@ -249,7 +249,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
 }, (request, response, next) => {
     console.log(`start of step 3`);
     //Retrieve the members
-    let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId=$2`
+    let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId = $2`
     let values = [request.params.memberId, request.chatId]
     console.log(`Query: ${query}`);
 
