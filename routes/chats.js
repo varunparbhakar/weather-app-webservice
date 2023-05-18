@@ -186,7 +186,7 @@ router.put("/:chatId/", (request, response, next) => {
 )
 
 /**
- * @api {get} /chats/:chatId? Request to get the chats a user is in
+ * @api {get} /chats/:memberId? Request to get the chats a user is in
  * @apiName GetChats
  * @apiGroup Chats
  *
@@ -242,9 +242,10 @@ router.get("/:memberId", (request, response, next) => {
 }, (request, response, next) => {
     //Retrieve the members
     let query = `SELECT Members.Email 
-                    FROM ChatMembers
-                    INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId
-                    WHERE ChatId={request.chatId}`
+                FROM ChatMembers
+                INNER JOIN Members 
+                    ON ChatMembers.MemberId=Members.MemberId
+                WHERE ChatId={request.chatId}`
     let values = [request.params.chatId]
     pool.query(query, values)
         .then(result => {
