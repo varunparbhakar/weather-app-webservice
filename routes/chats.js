@@ -205,23 +205,28 @@ router.put("/:chatId/", (request, response, next) => {
  *
  * @apiUse JSONError
  */
-router.get("/:memberId", (request, response, next) => {
+router.get("/memberId=:memberId", (request, response, next) => {
+    let num = Number(request.params.memberId);
     //validate on missing or invalid (type) parameters
-    if (!request.params.memberId) {
+    if (!num) {
         response.status(400).send({
             message: "Missing required information"
         })
-    } else if (isNaN(request.params.memberId)) {
+    } else if (isNaN(num)) {
         response.status(400).send({
             message: "Malformed parameter. memberId must be a number"
         })
     } else {
+        console.log("got through step 1: valid request");
         next()
     }
 },  (request, response, next) => {
     //get chat id
-    let query = 'SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1);'
-    let values = [request.params.chatId]
+    let query = 'SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)'
+    let values = [request.params.memberId]
+
+    console.log(`Query: ${query}`);
+    console.log(`Values: ${values}`);
 
     pool.query(query, values)
         .then(result => {
@@ -230,8 +235,9 @@ router.get("/:memberId", (request, response, next) => {
                     message: "Member ID not found"
                 })
             } else {
-                request.chatId = result.rows[0].chatid;
-                next()
+                request.chatId = result.rows[0].chatId;
+                console.log("got through step 2: get chat id");
+                next();
             }
         }).catch(error => {
         response.status(400).send({
@@ -245,14 +251,13 @@ router.get("/:memberId", (request, response, next) => {
                 FROM ChatMembers
                 INNER JOIN Members 
                     ON ChatMembers.MemberId=Members.MemberId
-                WHERE ChatId={request.chatId}`
-    let values = [request.params.chatId]
+                WHERE ChatId=${request.chatId}`
+    let values = [request.params.memberId]
     pool.query(query, values)
         .then(result => {
-            response.send({
-                rowCount : result.rowCount,
-                rows: result.rows
-            })
+            request.chatId = result.rows[0].chatId;
+            console.log("got through step 3: get chat member emails");
+            next();
         }).catch(err => {
         response.status(400).send({
             message: "SQL Error",
@@ -263,10 +268,10 @@ router.get("/:memberId", (request, response, next) => {
     //Retrieve the top message
     let query = `SELECT message 
                     FROM messages 
-                    WHERE chatid = {request.chatId}
+                    WHERE chatid = ${request.chatId}
                         AND 
-                    primarykey = (SELECT MAX(primarykey) FROM messages);`
-    let values = [request.params.chatId]
+                    primarykey = (SELECT MAX(primarykey) FROM messages)`
+    let values = [request.params.memberId]
     pool.query(query, values)
         .then(result => {
             response.send({
