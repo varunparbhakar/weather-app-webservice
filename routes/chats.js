@@ -235,7 +235,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
                 })
             } else {
                 response.send(
-                    result.rows.forEach(row => {row.chatid})
+                    result.rows.map(row => row.chatid)
                 )
             }
         }).catch(error => {
