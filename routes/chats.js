@@ -236,7 +236,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
                 })
             } else {
                 request.chatId = result.rows[0].chatId;
-                console.log("got through step 2: get chat id");
+                console.log(`got through step 2: get chat id, chatId = ${request.chatId}`);
                 next();
             }
         }).catch(error => {
