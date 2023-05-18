@@ -251,7 +251,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
 },  (request, response, next) => {
     console.log(`\nstart of step 3`);
     //get chat id
-    let query = `SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)`
+    let query = `SELECT Email FROM Members`
     let values = [request.params.memberId]
 
     console.log(`Query: ${query}`);
@@ -262,7 +262,10 @@ router.get("/memberId=:memberId", (request, response, next) => {
             console.log(`Result: ${Object.keys(result.rows[0])}`);
             Object.keys(result.rows[0]).forEach( key => console.log(key));
             console.log("got through step 3: get chat member emails");
-            next();
+            response.send({
+                rowCount : result.rowCount,
+                rows: result.rows
+            })
         }).catch(err => {
             response.status(400).send({
                 message: "SQL Error",
