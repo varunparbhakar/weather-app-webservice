@@ -186,7 +186,7 @@ router.put("/:chatId/", (request, response, next) => {
 )
 
 /**
- * @api {get} /chats/:memberId? Request to get the chats a user is in
+ * @api {get} /chats/memberId=:memberId? Request to get the chats a user is in
  * @apiName GetChats
  * @apiGroup Chats
  *
@@ -224,7 +224,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
 },  (request, response, next) => {
 
     //get chat id
-    let query = `SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)`
+    let query = `SELECT chats.chatid FROM chats JOIN chatmembers ON chats.chatid = chatmembers.chatid WHERE memberid = $1`
     let values = [request.params.memberId]
 
     pool.query(query, values)
@@ -234,8 +234,9 @@ router.get("/memberId=:memberId", (request, response, next) => {
                     message: "Member ID not found"
                 })
             } else {
-                response.chatId = result.rows[0].chatid;
-                next();
+                response.send(
+                    result.rows.forEach(row => {row.chatid})
+                )
             }
         }).catch(error => {
         response.status(400).send({
@@ -290,7 +291,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
 });
 
 /**
- * @api {get} /chats/:chatId? Request to get the emails of user in a chat
+ * @api {get} /chats/:chatId? Request to get the emails and top message of user in a chat
  * @apiName GetChats
  * @apiGroup Chats
  *
