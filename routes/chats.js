@@ -246,42 +246,38 @@ router.get("/memberId=:memberId", (request, response, next) => {
             error: error
         })
     })
-// }, (request, response, next) => {
-//     console.log(`start of step 3, chatID = ${request.chatId}`);
-//     //Retrieve the members
-//     let query = `SELECT Members.Email 
-//                 FROM ChatMembers
-//                 INNER JOIN Members 
-//                     ON ChatMembers.MemberId=Members.MemberId
-//                 WHERE ChatId=${request.chatId}`
-//     let values = [request.params.memberId]
-//     console.log(`Query: ${query}`);
+}, (request, response, next) => {
+    console.log(`start of step 3`);
+    //Retrieve the members
+    let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId=${request.chatId}`
+    let values = [request.params.memberId]
+    console.log(`Query: ${query}`);
 
-//     pool.query(query, values)
-//         .then(result => {
-//             Object.keys(result.rows[0]).forEach( key => console.log(key));
-//             console.log("got through step 3: get chat member emails");
-//             next();
-//         }).catch(err => {
-//             response.status(400).send({
-//                 message: "SQL Error",
-//                 error: err
-//             })
-//         })
+    pool.query(query, values)
+        .then(result => {
+            console.log(`Result: ${Object.keys(result.rows[0])}`);
+            Object.keys(result.rows[0]).forEach( key => console.log(key));
+            console.log("got through step 3: get chat member emails");
+            next();
+        }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+        })
 }, (request, response) => {
     console.log(`start of step 4`);
     //Retrieve the top message
-    let query = `SELECT message 
-                    FROM messages 
-                    WHERE chatid = ${request.chatId}
-                        AND 
-                    primarykey = (SELECT MAX(primarykey) FROM messages)`;
+    let query = `SELECT message FROM messages WHERE chatid = ${request.chatId} AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
     let values = [request.params.memberId];
 
     console.log(`Query: ${query}`);
-    
+
     pool.query(query, values)
         .then(result => {
+            console.log(`Result: ${Object.keys(result.rows[0])}`);
+            Object.keys(result.rows[0]).forEach( key => console.log(key));
+            console.log("got through step 4: get chat top message");
             response.send({
                 rowCount : result.rowCount,
                 rows: result.rows
