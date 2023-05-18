@@ -252,9 +252,9 @@ router.get("/memberId=:memberId", (request, response, next) => {
 }, (request, response, next) => {
     console.log(`\nstart of step 3`);
     //Retrieve the members
-    let query = `SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)`
-    // let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId = $2`
-    let values = [request.params.memberId]
+    // let query = `SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)`
+    let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId = $1`
+    let values = [request.chatId]
     // let values = [request.params.memberId]
     
     console.log(`Query: ${query}`);
@@ -262,16 +262,6 @@ router.get("/memberId=:memberId", (request, response, next) => {
 
     pool.query(query, values)
         .then(result => {
-            // if (result.rowCount == 0) {
-            //     response.status(404).send({
-            //         message: "Member ID not found"
-            //     })
-            // } else {
-            //     console.log(`Result: ${Object.keys(result.rows[0])}`);
-            //     request.chatId = result.rows[0].chatid;
-            //     console.log(`got through step 2: get chat id, chatId = ${request.chatId}`);
-            //     next();
-            // }
             console.log(`Result: ${Object.keys(result.rows[0])}`);
             Object.keys(result.rows[0]).forEach( key => console.log(key));
             console.log("got through step 3: get chat member emails");
@@ -285,9 +275,9 @@ router.get("/memberId=:memberId", (request, response, next) => {
 }, (request, response) => {
     console.log(`\nstart of step 4`);
     //Retrieve the top message
-    let query = `SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)`;
-    // let query = `SELECT message FROM messages WHERE chatid = $2 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
-    let values = [request.params.memberId, request.chatId];
+    // let query = `SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)`;
+    let query = `SELECT message FROM messages WHERE chatid = $1 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
+    let values = [request.chatId];
 
     console.log(`Query: ${query}`);
     console.log(`Values: ${values}`);
