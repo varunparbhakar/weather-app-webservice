@@ -318,6 +318,7 @@ router.get("/id=:chatId", (request, response, next) => {
         next()
     }
 },  (request, response, next) => {
+    console.log("started: validate chat id exists");
     //validate chat id exists
     let query = 'SELECT * FROM CHATS WHERE ChatId=$1'
     let values = [request.params.chatId]
@@ -338,6 +339,7 @@ router.get("/id=:chatId", (request, response, next) => {
         })
     })
 }, (request, response) => {
+    console.log("started: retrieve the members");
     //Retrieve the members
     let query = `SELECT Members.Email 
                     FROM ChatMembers
@@ -355,6 +357,7 @@ router.get("/id=:chatId", (request, response, next) => {
         })
     })
 }, (request, response) => {
+    console.log("started: Retrieve the top message");
     //Retrieve the top message
     let query = `SELECT message FROM messages WHERE chatid = $1 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
     let values = [response.chatId];
