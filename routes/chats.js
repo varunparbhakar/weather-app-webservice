@@ -246,6 +246,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
         })
     })
 }, (request, response, next) => {
+    console.log(`start of step 3, chatID = ${request.chatId}`);
     //Retrieve the members
     let query = `SELECT Members.Email 
                 FROM ChatMembers
@@ -259,11 +260,11 @@ router.get("/memberId=:memberId", (request, response, next) => {
             console.log("got through step 3: get chat member emails");
             next();
         }).catch(err => {
-        response.status(400).send({
-            message: "SQL Error",
-            error: err
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
         })
-    })
 }, (request, response) => {
     //Retrieve the top message
     let query = `SELECT message 
