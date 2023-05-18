@@ -206,6 +206,7 @@ router.put("/:chatId/", (request, response, next) => {
  * @apiUse JSONError
  */
 router.get("/memberId=:memberId", (request, response, next) => {
+    console.log(`\nstart of step 1`);
     let num = Number(request.params.memberId);
     //validate on missing or invalid (type) parameters
     if (!num) {
@@ -221,8 +222,9 @@ router.get("/memberId=:memberId", (request, response, next) => {
         next()
     }
 },  (request, response, next) => {
+    console.log(`\nstart of step 2`);
     //get chat id
-    let query = 'SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)'
+    let query = `SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)`
     let values = [request.params.memberId]
 
     console.log(`Query: ${query}`);
@@ -247,7 +249,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
         })
     })
 }, (request, response, next) => {
-    console.log(`start of step 3`);
+    console.log(`\nstart of step 3`);
     //Retrieve the members
     let query = `SELECT Email FROM Members`
     // let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId = $2`
@@ -267,7 +269,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
             })
         })
 }, (request, response) => {
-    console.log(`start of step 4`);
+    console.log(`\nstart of step 4`);
     //Retrieve the top message
     let query = `SELECT message FROM messages`;
     // let query = `SELECT message FROM messages WHERE chatid = $2 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
