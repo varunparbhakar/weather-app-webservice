@@ -255,9 +255,10 @@ router.get("/memberId=:memberId", (request, response, next) => {
                     ON ChatMembers.MemberId=Members.MemberId
                 WHERE ChatId=${request.chatId}`
     let values = [request.params.memberId]
+    console.log(`Query: ${query}`);
+
     pool.query(query, values)
         .then(result => {
-            request.chatId = result.rows[0].chatId;
             console.log("got through step 3: get chat member emails");
             next();
         }).catch(err => {
