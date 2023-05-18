@@ -254,8 +254,8 @@ router.get("/memberId=:memberId", (request, response, next) => {
     //Retrieve the members
     let query = `SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)`
     // let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId = $2`
-    // let values = [request.params.memberId, request.chatId]
-    let values = [request.params.memberId]
+    let values = [request.params.memberId, request.chatId]
+    // let values = [request.params.memberId]
     
     console.log(`Query: ${query}`);
     console.log(`Values: ${values}`);
