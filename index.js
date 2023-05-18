@@ -40,6 +40,8 @@ app.use("/doc", express.static('apidoc'));
 app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
 app.use('/chats', middleware.checkToken, require('./routes/chats.js'))
 app.use('/weather', require('./routes/weather.js'));
+app.use('/contacts', middleware.checktoken, require('./routes/contacts'));
+
 app.get("/", (request, response) => {
  //this is a Web page so set the content-type to HTML
  response.writeHead(200, { "Content-Type": "text/html" });
