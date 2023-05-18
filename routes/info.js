@@ -13,6 +13,19 @@ const sendEmail = require("../utilities").sendEmail;
 
 const router = express.Router();
 
+/**
+ * @api {post} /info Request information about supplied member. DEPRECIATED.
+ * @apiName PostInfo
+ * @apiGroup Info
+ *
+ * @apiDescription Retrieves information about user based on email.
+ *
+ * @apiParam {String} email Email of the member information is desired for.
+ *
+ * @apiSuccess (Success 200) {JSON} body Table data about user.
+ *
+ * @apiError (400: Invalid User) {String} message "Error retriving member information"
+ */
 router.post("/", (request, response) => {
     console.log(request.body);
     if (isStringProvided(request.body.email)) {
@@ -26,7 +39,7 @@ router.post("/", (request, response) => {
             .catch((error) => {
                 console.log([request.body.email])
                 console.log(error)
-                response.status(500).send({
+                response.status(400).send({
                     message: "Error retriving member information",
                     error: error.detail,
                 });

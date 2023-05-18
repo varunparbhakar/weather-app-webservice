@@ -16,6 +16,28 @@ const sendEmail = require("../utilities").sendEmail;
 
 const router = express.Router();
 
+/**
+ * @apiDefine JSONError
+ * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
+ */
+
+/**
+ * @api {get} /verify Get Authentication Token.
+ * @apiName GetToken
+ * @apiGroup Verify
+ *
+ * @apiDescription Generates an JWT token for a user so they can be considered verified.
+ *
+ * @apiParam {String} email Email of user making the request.
+ *
+ * @apiSuccess (Success 200) {String} email Email address which the verification email was sent to.
+ *
+ * @apiError (400: Invalid Parameters) {String} message "This user is not a member"
+ *
+ * @apiError (409: Invalid Parameters) {String} message "User is already verified"
+ *
+ * @apiError (500: SQL Error) {String} message "Error retrieving member verification information"
+ */
 router.get("/gettoken/", (request, response, next) => {
     if (isStringProvided(request.query.email)) {
         //This person is trying to get verified
@@ -24,7 +46,7 @@ router.get("/gettoken/", (request, response, next) => {
                 if(result.rowCount <= 0) {
                     response.status(400).send({
                         email: request.query.email,
-                        message: "This user is not a memeber",
+                        message: "This user is not a member",
                     });
                 } else {
                     console.log(request.query.email)
@@ -166,6 +188,26 @@ router.get("/gettoken/", (request, response, next) => {
         });
     });
 })
+
+/**
+ * @api {get} /verify Submit Verification.
+ * @apiName SubmitVerification
+ * @apiGroup Verify
+ *
+ * @apiDescription Verifies user based on provided query code.
+ *
+ * @apiParam {String} email Email of user making the request.
+ * 
+ * @apiParam {String} verifycode Verification code of user making the request.
+ *
+ * @apiSuccess (Success 200) {String} email Email address of the user which has been verified.
+ *
+ * @apiError (400: Invalid Parameters) {String} message "This user is not a member"
+ *
+ * @apiError (409: Invalid Parameters) {String} message "User is already verified"
+ *
+ * @apiError (500: SQL Error) {String} message "Error retrieving member verification information"
+ */
 router.get("/submitverification/",(request, response, next) => {
     if (isStringProvided(request.query.email) && isStringProvided(request.query.verifycode)) {
     //This person is trying to get verified
