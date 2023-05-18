@@ -206,7 +206,7 @@ router.put("/:chatId/", (request, response, next) => {
  * @apiUse JSONError
  */
 router.get("/memberId=:memberId", (request, response, next) => {
-    console.log(`\nstart of step 1`);
+
     let num = Number(request.params.memberId);
 
     //validate on missing or invalid (type) parameters
@@ -219,17 +219,13 @@ router.get("/memberId=:memberId", (request, response, next) => {
             message: "Malformed parameter. memberId must be a number"
         })
     } else {
-        console.log("got through step 1: valid request");
-        next()
+        next();
     }
 },  (request, response, next) => {
-    console.log(`\nstart of step 2`);
+
     //get chat id
     let query = `SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)`
     let values = [request.params.memberId]
-
-    console.log(`Query: ${query}`);
-    console.log(`Values: ${values}`);
 
     pool.query(query, values)
         .then(result => {
@@ -238,9 +234,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
                     message: "Member ID not found"
                 })
             } else {
-                console.log(`Result: ${Object.keys(result.rows[0])}`);
-                request.chatId = result.rows[0].chatid;
-                console.log(`got through step 2: get chat id, chatId = ${request.chatId}`);
+                response.chatId = result.rows[0].chatid;
                 next();
             }
         }).catch(error => {
@@ -250,22 +244,21 @@ router.get("/memberId=:memberId", (request, response, next) => {
         })
     })
 }, (request, response, next) => {
-    console.log(`\nstart of step 3`);
-    //Retrieve the members
-    // let query = `SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)`
-    let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId = $1`
-    let values = [request.chatId]
-    // let values = [request.params.memberId]
-    
-    console.log(`Query: ${query}`);
-    console.log(`Values: ${values}`);
 
+    //Retrieve the members
+    let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId = $1`
+    let values = [response.chatId]
+    
     pool.query(query, values)
         .then(result => {
-            console.log(`Result: ${Object.keys(result.rows[0])}`);
-            Object.keys(result.rows[0]).forEach( key => console.log(key));
-            console.log("got through step 3: get chat member emails");
-            next();
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "Member Email not found"
+                })
+            } else {
+                response.email = result.rows[0].email;
+                next();
+            }
         }).catch(err => {
             response.status(400).send({
                 message: "SQL Error",
@@ -273,24 +266,21 @@ router.get("/memberId=:memberId", (request, response, next) => {
             })
         })
 }, (request, response) => {
-    console.log(`\nstart of step 4`);
+    
     //Retrieve the top message
-    // let query = `SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)`;
     let query = `SELECT message FROM messages WHERE chatid = $1 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
-    let values = [request.chatId];
-
-    console.log(`Query: ${query}`);
-    console.log(`Values: ${values}`);
+    let values = [response.chatId];
 
     pool.query(query, values)
         .then(result => {
-            console.log(`Result: ${Object.keys(result.rows[0])}`);
-            Object.keys(result.rows[0]).forEach( key => console.log(key));
-            console.log("got through step 4: get chat top message");
-            response.send({
-                rowCount : result.rowCount,
-                rows: result.rows
-            })
+            response.topMessage = result.rows[0].message;
+            response.json({
+                success: true,
+                message: "get/chats successful!",
+                chatId: response.chatId,
+                email: response.email,
+                topMessage: response.topMessage
+            });
         }).catch(err => {
         response.status(400).send({
             message: "SQL Error",
