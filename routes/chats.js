@@ -248,13 +248,14 @@ router.get("/memberId=:memberId", (request, response, next) => {
             error: error
         })
     })
-}, (request, response, next) => {
+},  (request, response, next) => {
     console.log(`\nstart of step 3`);
-    //Retrieve the members
-    let query = `SELECT Email FROM Members`
-    // let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId = $2`
-    let values = [request.params.memberId, request.chatId]
+    //get chat id
+    let query = `SELECT * FROM chats WHERE chatid IN (SELECT chatmembers.chatid FROM chatmembers WHERE memberid = $1)`
+    let values = [request.params.memberId]
+
     console.log(`Query: ${query}`);
+    console.log(`Values: ${values}`);
 
     pool.query(query, values)
         .then(result => {
@@ -268,31 +269,52 @@ router.get("/memberId=:memberId", (request, response, next) => {
                 error: err
             })
         })
-}, (request, response) => {
-    console.log(`\nstart of step 4`);
-    //Retrieve the top message
-    let query = `SELECT message FROM messages`;
-    // let query = `SELECT message FROM messages WHERE chatid = $2 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
-    let values = [request.params.memberId, request.chatId];
-
-    console.log(`Query: ${query}`);
-
-    pool.query(query, values)
-        .then(result => {
-            console.log(`Result: ${Object.keys(result.rows[0])}`);
-            Object.keys(result.rows[0]).forEach( key => console.log(key));
-            console.log("got through step 4: get chat top message");
-            response.send({
-                rowCount : result.rowCount,
-                rows: result.rows
-            })
-        }).catch(err => {
-        response.status(400).send({
-            message: "SQL Error",
-            error: err
-        })
-    })
 }
+// }, (request, response, next) => {
+//     console.log(`\nstart of step 3`);
+//     //Retrieve the members
+//     let query = `SELECT Email FROM Members`
+//     // let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId = $2`
+//     let values = [request.params.memberId, request.chatId]
+//     console.log(`Query: ${query}`);
+
+//     pool.query(query, values)
+//         .then(result => {
+//             console.log(`Result: ${Object.keys(result.rows[0])}`);
+//             Object.keys(result.rows[0]).forEach( key => console.log(key));
+//             console.log("got through step 3: get chat member emails");
+//             next();
+//         }).catch(err => {
+//             response.status(400).send({
+//                 message: "SQL Error",
+//                 error: err
+//             })
+//         })
+// }, (request, response) => {
+//     console.log(`\nstart of step 4`);
+//     //Retrieve the top message
+//     let query = `SELECT message FROM messages`;
+//     // let query = `SELECT message FROM messages WHERE chatid = $2 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
+//     let values = [request.params.memberId, request.chatId];
+
+//     console.log(`Query: ${query}`);
+
+//     pool.query(query, values)
+//         .then(result => {
+//             console.log(`Result: ${Object.keys(result.rows[0])}`);
+//             Object.keys(result.rows[0]).forEach( key => console.log(key));
+//             console.log("got through step 4: get chat top message");
+//             response.send({
+//                 rowCount : result.rowCount,
+//                 rows: result.rows
+//             })
+//         }).catch(err => {
+//         response.status(400).send({
+//             message: "SQL Error",
+//             error: err
+//         })
+//     })
+// }
 );
 
 /**
