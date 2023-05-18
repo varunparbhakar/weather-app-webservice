@@ -208,9 +208,6 @@ router.put("/:chatId/", (request, response, next) => {
 router.get("/memberId=:memberId", (request, response, next) => {
     console.log(`\nstart of step 1`);
     let num = Number(request.params.memberId);
-    
-    console.log(`Query: ${query}`);
-    console.log(`Values: ${values}`);
 
     //validate on missing or invalid (type) parameters
     if (!num) {
