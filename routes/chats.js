@@ -360,7 +360,7 @@ router.get("/id=:chatId", (request, response, next) => {
     console.log("started: Retrieve the top message");
     //Retrieve the top message
     let query = `SELECT message FROM messages WHERE chatid = $1 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
-    let values = [response.chatId];
+    let values = [request.params.chatId];
 
     pool.query(query, values)
         .then(result => {
