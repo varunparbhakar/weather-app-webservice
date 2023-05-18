@@ -275,8 +275,11 @@ router.get("/memberId=:memberId", (request, response, next) => {
                     FROM messages 
                     WHERE chatid = ${request.chatId}
                         AND 
-                    primarykey = (SELECT MAX(primarykey) FROM messages)`
-    let values = [request.params.memberId]
+                    primarykey = (SELECT MAX(primarykey) FROM messages)`;
+    let values = [request.params.memberId];
+
+    console.log(`Query: ${query}`);
+    
     pool.query(query, values)
         .then(result => {
             response.send({
