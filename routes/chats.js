@@ -249,8 +249,8 @@ router.get("/memberId=:memberId", (request, response, next) => {
 }, (request, response, next) => {
     console.log(`start of step 3`);
     //Retrieve the members
-    let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId=${request.chatId}`
-    let values = [request.params.memberId]
+    let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId=$2`
+    let values = [request.params.memberId, request.chatId]
     console.log(`Query: ${query}`);
 
     pool.query(query, values)
@@ -268,8 +268,8 @@ router.get("/memberId=:memberId", (request, response, next) => {
 }, (request, response) => {
     console.log(`start of step 4`);
     //Retrieve the top message
-    let query = `SELECT message FROM messages WHERE chatid = ${request.chatId} AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
-    let values = [request.params.memberId];
+    let query = `SELECT message FROM messages WHERE chatid = $2 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
+    let values = [request.params.memberId, request.chatId];
 
     console.log(`Query: ${query}`);
 
