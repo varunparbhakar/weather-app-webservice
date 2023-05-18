@@ -259,6 +259,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
 
     pool.query(query, values)
         .then(result => {
+            Object.keys(result.rows[0]).forEach( key => console.log(key));
             console.log("got through step 3: get chat member emails");
             next();
         }).catch(err => {
@@ -268,6 +269,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
             })
         })
 }, (request, response) => {
+    console.log(`start of step 4`);
     //Retrieve the top message
     let query = `SELECT message 
                     FROM messages 
