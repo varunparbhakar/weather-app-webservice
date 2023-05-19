@@ -338,7 +338,7 @@ router.get("/id=:chatId", (request, response, next) => {
             error: error
         })
     })
-}, (request, response) => {
+}, (request, response, next) => {
     console.log("started: retrieve the members");
     //Retrieve the members
     let query = 'SELECT * FROM CHATS WHERE ChatId=$1'
