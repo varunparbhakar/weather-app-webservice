@@ -135,11 +135,6 @@ router.post("/sendfriendrequest/", (request, response, next)=> {
         console.log("User is requesting contacts");
         next();
     }
-    //check if they exists in the database
-    //check if they have already sent you a friend request
-    //check if you have already sent the friend request
-
-
 
 }, (request, response, next) => {
     //check if they exists in the database
