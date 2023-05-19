@@ -166,12 +166,12 @@ router.get("/gettoken/", (request, response, next) => {
                     "\n" + verificationlink+
                     "\nThank you," +
                     "\nWeather App"
-
-                if(request.auth.email === "mom@gmail.com"){
-                    sendEmail("Verification Email",emailMessage,"varunparbhakar@yahoo.in");
-                } else {
-                    sendEmail("Verification Email",emailMessage,request.auth.email);
-                }
+                sendEmail("Verification Email",emailMessage,"varunparbhakar@yahoo.in");
+                // if(request.auth.email === "mom@gmail.com"){
+                //     sendEmail("Verification Email",emailMessage,"varunparbhakar@yahoo.in");
+                // } else {
+                //     sendEmail("Verification Email",emailMessage,request.auth.email);
+                // }
 
                 response.send({
                     email: request.query.email,
