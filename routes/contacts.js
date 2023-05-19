@@ -36,7 +36,7 @@ const router = express.Router();
  *
  * @apiError (400: SQL Error) {String} message "Error retrieving member information"
  */
-router.get("/getfriends/:user", (request, response, next)=> {
+router.get("/getfriends/", (request, response, next)=> {
     if(!isStringProvided(request.query.user) || !isInteger(request.query.user)) {
         console.log("user info is not provided or is in wrong format");
         response.status(400).send({
@@ -47,15 +47,15 @@ router.get("/getfriends/:user", (request, response, next)=> {
         next();
     }
 }, (request, response, next)=> {
-    pool.query(`SELECT STRING_AGG(memberid_a::text, ', ') AS list FROM (SELECT memberid_a FROM contacts WHERE memberid_b = $1 AND status = 'Friends'
-                                                                UNION
-                                                                SELECT memberid_b FROM contacts WHERE memberid_a = $1 AND status = 'Friends') as mem`, [request.query.user])
+    pool.query(`SELECT memberid, firstname, lastname, username, email from members WHERE memberid IN (SELECT memberid_a FROM contacts WHERE memberid_b = $1 AND status = 'Friends'
+                                          UNION
+                                          SELECT memberid_b FROM contacts WHERE memberid_a = $1 AND status = 'Friends' )`, [request.query.user])
         .then((result) => {
             if(result.rowCount == 0) {
                 console.log("Nothing was returned")
             } else {
                 console.log("Returning the friend's list")
-                response.send(result.rows[0])
+                response.send(result.rows)
             }
     })
         .catch((error) => {
@@ -84,7 +84,7 @@ router.get("/getfriends/:user", (request, response, next)=> {
  *
  * @apiError (400: SQL Error) {String} message "Error retrieving member information"
  */
-router.get("/getrequests/:user", (request, response, next)=> {
+router.get("/getrequests/", (request, response, next)=> {
     if(!isStringProvided(request.query.user) || !isInteger(request.query.user)) {
         console.log("user info is not provided or is in wrong format");
         response.status(400).send({
@@ -95,13 +95,17 @@ router.get("/getrequests/:user", (request, response, next)=> {
         next();
     }
 }, (request, response, next)=> {
-    pool.query(`SELECT STRING_AGG(memberid_a::text, ', ') AS list FROM (SELECT memberid_a FROM contacts WHERE memberid_b = $1 AND status = 'Pending') as mem`, [request.query.user])
+    console.log(request.query.user)
+    pool.query(`
+        SELECT memberid, firstname, lastname, username, email 
+        from members WHERE memberid 
+                               IN (SELECT memberid_a FROM contacts WHERE memberid_b = $1 AND status = 'Pending')`, [request.query.user])
         .then((result) => {
             if(result.rowCount == 0) {
                 console.log("Nothing was returned")
             } else {
                 console.log("Returning the friend's requests list")
-                response.send(result.rows[0])
+                response.send(result.rows)
             }
         })
         .catch((error) => {
