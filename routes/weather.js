@@ -7,8 +7,10 @@ let isStringProvided = validation.isStringProvided;
 
 const router = express.Router();
 
-//Handler for processing async external get requests.
-//Source: https://gist.github.com/msmfsd/fca50ab095b795eb39739e8c4357a808
+/*
+ * Handler for processing async external get requests.
+ * Source: https://gist.github.com/msmfsd/fca50ab095b795eb39739e8c4357a808
+ */
 async function fetchAsync (u) {
     let response = await fetch(u);
     let data = await response.json();
@@ -24,7 +26,7 @@ async function fetchAsync (u) {
  *
  * @apiParam {String} zipcode Required: zipcode or city name for weather retrieval
  * 
- * @apiParam {int} days Optional: Amount of days to retrieve, between 1 and 5 inclusive. Default 5.
+ * @apiQuery {int} days Optional: Amount of days to retrieve, between 1 and 5 inclusive. Default 5.
  *
  * @apiSuccess (Success 200) {boolean} success true when the name is inserted
  *
@@ -32,7 +34,7 @@ async function fetchAsync (u) {
  * 
  * @apiError (400: External Service Error) {String} message "External weather service error"
  */
-router.get("/", (request, response, next) => {
+router.get("/:zipcode?:days?", (request, response, next) => {
     if (isStringProvided(request.query.zipcode)) {
         next();
     } else {

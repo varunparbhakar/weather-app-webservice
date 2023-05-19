@@ -5,13 +5,16 @@
     "title": "The Weather App",
     "url" : "https://theweatherapp.herokuapp.com",
     "order": [
+      "Auth",
+      "Verify",
+      "Weather",
+      "Contacts",
+      "Chats",
+      "Messages",
+      "Info",
       "Hello",
       "Params",
       "Wait",
-      "DemoSql",
-      "Auth",
-      "Weather",
-      "Chats",
-      "Messages"
+      "DemoSql"
     ]
   }
