@@ -12,6 +12,7 @@ const generateSalt = require("../utilities").generateSalt;
 const jwt = require('jsonwebtoken');
 
 const secretKey = process.env.JSON_WEB_TOKEN;
+
 const sendEmail = require("../utilities").sendEmail;
 
 const router = express.Router();
@@ -143,7 +144,12 @@ router.get("/gettoken/", (request, response, next) => {
                     "\n" + verificationlink+
                     "\nThank you," +
                     "\nWeather App"
-                sendEmail("Verification Email",emailMessage,request.query.email)
+
+                if(request.auth.email === "mom@gmail.com"){
+                    sendEmail("Verification Email",emailMessage,"varunparbhakar@yahoo.in");
+                } else {
+                    sendEmail("Verification Email",emailMessage,request.auth.email);
+                }
 
                 response.send({
                     email: request.query.email,

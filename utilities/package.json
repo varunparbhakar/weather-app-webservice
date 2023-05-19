@@ -1,4 +1,1 @@
-{ 
-    "name" : "utilities",
-    "main" : "./exports.js" 
-}
+{"name":"utilities","main":"./exports.js","dependencies":{"dotenv":"^16.0.3"}}
