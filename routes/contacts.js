@@ -170,9 +170,8 @@ router.post("/sendfriendrequest/", (request, response, next)=> {
     console.log("Searching for any conflicts in the database")
     pool.query(`SELECT *
                 FROM contacts
-                WHERE (memberid_a = $1 AND memberid_b = $2)
-                  AND EXISTS (
-                    SELECT 1
+                WHERE (memberid_a = $1 AND memberid_b = $2) UNION (
+                    SELECT *
                     FROM contacts
                     WHERE memberid_a = $2 AND memberid_b = $1
                 )`, [request.body.sender, request.body.receiver])
@@ -187,6 +186,7 @@ router.post("/sendfriendrequest/", (request, response, next)=> {
                 })
             } else {
                 console.log("Neither party has tried to add each other")
+                // response.send("Neither party has tried to add each other")
                 next()
             }
         })
@@ -197,7 +197,8 @@ router.post("/sendfriendrequest/", (request, response, next)=> {
                 error: error.detail,
             });
         });
-}, (request, response) => {
+}
+, (request, response) => {
     //Registering the friend request
     console.log("Inserting the friend request into the database")
     pool.query(`Insert into contacts (memberid_a, memberid_b, status) VALUES ($1, $2, 'Pending');`, [request.body.sender, request.body.receiver])
