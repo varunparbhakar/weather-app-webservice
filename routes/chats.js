@@ -219,7 +219,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
     } else {
         next();
     }
-},  (request, response, next) => {
+},  (request, response) => {
     //get chat id
     let query = `SELECT chats.chatid FROM chats JOIN chatmembers ON chats.chatid = chatmembers.chatid WHERE memberid = $1`
     let values = [request.params.memberId]
@@ -238,47 +238,6 @@ router.get("/memberId=:memberId", (request, response, next) => {
         response.status(400).send({
             message: "SQL Error",
             error: error
-        })
-    })
-}, (request, response, next) => {
-    //Retrieve the members
-    let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId = $1`
-    let values = [response.chatId]
-    pool.query(query, values)
-        .then(result => {
-            if (result.rowCount == 0) {
-                response.status(404).send({
-                    message: "Member Email not found"
-                })
-            } else {
-                response.email = result.rows[0].email;
-                next();
-            }
-        }).catch(err => {
-            response.status(400).send({
-                message: "SQL Error",
-                error: err
-            })
-        })
-}, (request, response) => {
-    //Retrieve the top message
-    let query = `SELECT message FROM messages WHERE chatid = $1 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
-    let values = [response.chatId];
-
-    pool.query(query, values)
-        .then(result => {
-            response.topMessage = result.rows[0].message;
-            response.json({
-                success: true,
-                message: "get/chats successful!",
-                chatId: response.chatId,
-                email: response.email,
-                topMessage: response.topMessage
-            });
-        }).catch(err => {
-        response.status(400).send({
-            message: "SQL Error",
-            error: err
         })
     })
 });
@@ -341,13 +300,18 @@ router.get("/id=:chatId", (request, response, next) => {
 }, (request, response, next) => {
     console.log("started: retrieve the members");
     //Retrieve the members
-    // let query = 'SELECT * FROM CHATS WHERE ChatId=$1'
     let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId=$1`
     let values = [request.params.chatId]
     pool.query(query, values)
         .then(result => {
-            response.emails = result.rows.map(row => row.email);
-            next();
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "Member's email not found"
+                })
+            } else {
+                response.emails = result.rows.map(row => row.email);
+                next();
+            }
         }).catch(err => {
         response.status(400).send({
             message: "SQL Error",
@@ -357,19 +321,24 @@ router.get("/id=:chatId", (request, response, next) => {
 }, (request, response) => {
     console.log("started: Retrieve the top message");
     //Retrieve the top message
-    // let query = 'SELECT * FROM CHATS WHERE ChatId=$1'
-    let query = `SELECT message FROM messages WHERE chatid = $1 AND primarykey = (SELECT MAX(primarykey) FROM messages)`;
+    let query = `SELECT message FROM messages WHERE chatid = 2 ORDER BY primarykey DESC LIMIT 1`;
     let values = [request.params.chatId];
 
     pool.query(query, values)
         .then(result => {
-            response.topMessage = result.rows[0].message;
-            response.json({
-                success: true,
-                message: "get/chats email and top message successful!",
-                email: response.email,
-                topMessage: response.topMessage
-            });
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "Top message not found"
+                })
+            } else {
+                response.topMessage = result.rows[0].message;
+                response.json({
+                    success: true,
+                    message: "get/chats email and top message successful!",
+                    email: response.emails,
+                    topMessage: response.topMessage
+                });
+            }
         }).catch(err => {
         response.status(400).send({
             message: "SQL Error",
