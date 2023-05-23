@@ -122,12 +122,11 @@ router.post(
           success: true,
           email: request.body.email,
         });
-        sendEmail(
-          "our.email@lab.com",
-          request.body.email,
-          "Welcome to our App!",
-          "Please verify your Email account."
-        );
+        // sendEmail(
+        //   "our.email@lab.com",
+        //   "Welcome to our App!",
+        //   "request.body.email"
+        // );
       })
       .catch((error) => {
         //log the error for debugging

@@ -242,9 +242,9 @@ function generateToken(request, response, memberId, firstName) {
     pool.query(`INSERT into verification (memberid, email, verificationtoken) VALUES ($1, $2, $3)`, [memberId, request.auth.email, token])
         .then((result) => {
             if(result.rowCount > 0) {
-                // sendEmail("Verification Email",emailMessage,"varunparbhakar@yahoo.in");
                 console.log("Token was generated and now checking for the email")
                 if(request.auth.email === "mom@gmail.com"){
+                    console.log("Email was mom@gmail.com")
                     sendEmail("Verification Email",emailMessage,"varunparbhakar@yahoo.in");
                 }else {
                     console.log("Email was not mom@gmail.com")
@@ -266,7 +266,9 @@ function generateToken(request, response, memberId, firstName) {
         //     message: "Error storing verification information",
         //     error: error.detail,})
         })
-    response.send("User is not verified, a verification email has been sent")
+    response.status(401).send({
+        message: "User is not verified, a verification email has been sent"
+    })
 
     // console.log("Exiting generate token")
 
