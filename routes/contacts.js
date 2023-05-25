@@ -55,7 +55,13 @@ router.get("/getfriends/:user", (request, response, next)=> {
                 console.log("Nothing was returned")
             } else {
                 console.log("Returning the friend's list")
-                response.send(result.rows)
+                response.json({
+                    'memberid' : result.rows[0].memberid,
+                    'firstname' : result.rows[0].firstname,
+                    'lastname' : result.rows[0].lastname,
+                    'username' : result.rows[0].username,
+                    'email' : result.rows[0].email
+                })
             }
     })
         .catch((error) => {
