@@ -221,6 +221,69 @@ router.post("/sendfriendrequest/", (request, response, next)=> {
         });
 })
 
+
+//Delete Contact
+router.post("/remove/", (request, response, next)=> {
+    if(!isStringProvided(request.body.user) || !isStringProvided(request.body.friend) ||!isInteger(request.body.user)|| !isInteger(request.body.friend)) {
+        console.log("user info is not provided or is in wrong format");
+        response.status(400).send({
+            message: "Information is missing"
+        })
+    } else {
+        console.log("Appropriate info was provided")
+        next();
+    }
+}, (request, response, next)=> {
+    console.log("Checking if the friend is in the database")
+    pool.query(`SELECT * FROM members WHERE memberid = $1`, [request.body.friend])
+        .then((result) => {
+            if(result.rowCount <= 0) {
+                console.log("User was not found")
+                response.staus(400).send({
+                    receiver: request.body.receiver,
+                    sender : request.body.sender,
+                    message: "This user does not exists"
+                })
+            } else {
+                console.log("User was found")
+                next()
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+            response.status(400).send({
+                message: "Error finding user in the database",
+                error: error.detail,
+            });
+        });
+}, (request, response, next)=> {
+    console.log("Deleting from Contacts")
+    pool.query(`DELETE FROM contacts WHERE memberid_a = $1 OR memberid_b = $1`, [request.body.friend])
+        .then((result) => {
+            if(result.rowCount <= 0) {
+                console.log("The delete contact request was not successful")
+                response.send({
+                    message: "The delete contact request was not successful"
+                })
+            } else {
+                console.log("The delete contact request was successful")
+                response.send({
+                    message: "The delete contact request was successful"
+                })
+                next()
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+            response.status(400).send({
+                message: "Error finding user in the database",
+                error: error.detail,
+            });
+        });
+})
+
+
+
 /*
  * Checks if given value is an integer
  */
