@@ -56,11 +56,12 @@ router.get("/getfriends/:user", (request, response, next)=> {
             } else {
                 console.log("Returning the friend's list")
                 response.json({
-                    'memberid' : result.rows[0].memberid,
-                    'firstname' : result.rows[0].firstname,
-                    'lastname' : result.rows[0].lastname,
-                    'username' : result.rows[0].username,
-                    'email' : result.rows[0].email
+                    message: "get/contacts/getfriends successful!",
+                    memberid : result.rows[0].memberid,
+                    firstname : result.rows[0].firstname,
+                    lastname : result.rows[0].lastname,
+                    username : result.rows[0].username,
+                    email : result.rows[0].email
                 })
             }
     })
