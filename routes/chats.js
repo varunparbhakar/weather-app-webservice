@@ -221,7 +221,7 @@ router.get("/memberId=:memberId", (request, response, next) => {
     }
 },  (request, response) => {
     //get chat id
-    let query = `SELECT chats.chatid FROM chats JOIN chatmembers ON chats.chatid = chatmembers.chatid WHERE memberid = $1`;
+    let query = `SELECT chats.chatid, chats.name FROM chats JOIN chatmembers ON chats.chatid = chatmembers.chatid WHERE memberid = $1`;
     let values = [request.params.memberId];
     pool.query(query, values)
         .then(result => {
