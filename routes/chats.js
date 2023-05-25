@@ -221,8 +221,8 @@ router.get("/memberId=:memberId", (request, response, next) => {
     }
 },  (request, response) => {
     //get chat id
-    let query = `SELECT chats.chatid FROM chats JOIN chatmembers ON chats.chatid = chatmembers.chatid WHERE memberid = $1`
-    let values = [request.params.memberId]
+    let query = `SELECT chats.chatid FROM chats JOIN chatmembers ON chats.chatid = chatmembers.chatid WHERE memberid = $1`;
+    let values = [request.params.memberId];
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
@@ -230,16 +230,17 @@ router.get("/memberId=:memberId", (request, response, next) => {
                     message: "Member ID not found"
                 })
             } else {
-                response.send(
-                    result.rows.map(row => row.chatid)
-                )
+                response.json({
+                    message: "Retrieved chats successfully",
+                    rows: result.rows
+                })
             }
         }).catch(error => {
         response.status(400).send({
             message: "SQL Error",
             error: error
-        })
-    })
+        });
+    });
 });
 
 /**
