@@ -183,6 +183,7 @@ router.get(
                             username: result.rows[0].username,
                             firstname: result.rows[0].firstname,
                             lastname: result.rows[0].lastname,
+                            memberId: result.rows[0].memberId,
                         });
                     }
 
