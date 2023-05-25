@@ -36,8 +36,8 @@ const router = express.Router();
  *
  * @apiError (400: SQL Error) {String} message "Error retrieving member information"
  */
-router.get("/getfriends/", (request, response, next)=> {
-    if(!isStringProvided(request.query.user) || !isInteger(request.query.user)) {
+router.get("/getfriends/:user", (request, response, next)=> {
+    if(!isStringProvided(request.params.user) || !isInteger(request.params.user)) {
         console.log("user info is not provided or is in wrong format");
         response.status(400).send({
             message: "Invalid information provided"
@@ -49,7 +49,7 @@ router.get("/getfriends/", (request, response, next)=> {
 }, (request, response, next)=> {
     pool.query(`SELECT memberid, firstname, lastname, username, email from members WHERE memberid IN (SELECT memberid_a FROM contacts WHERE memberid_b = $1 AND status = 'Friends'
                                           UNION
-                                          SELECT memberid_b FROM contacts WHERE memberid_a = $1 AND status = 'Friends' )`, [request.query.user])
+                                          SELECT memberid_b FROM contacts WHERE memberid_a = $1 AND status = 'Friends' )`, [request.params.user])
         .then((result) => {
             if(result.rowCount == 0) {
                 console.log("Nothing was returned")
