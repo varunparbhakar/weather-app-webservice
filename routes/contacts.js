@@ -119,12 +119,21 @@ router.get("/getrequests/", (request, response, next)=> {
             });
         });
 })
-
+/**
+ * @apiDescription Send a friend request
+ * required body.sender = user itself
+ * required body.reciever = the person getting the friend request
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ *
+ * @param {Object} request - The request object.
+ * @param {Object} response - The response object.
+ * @param {Function} next - The next middleware function.
+ */
 router.post("/sendfriendrequest/", (request, response, next)=> {
     console.log(request.body.sender)
     console.log(request.body.receiver)
     console.log("Checking if the 2 body params are provided")
-    if(!isStringProvided(request.body.sender) || !isInteger(request.body.sender) ||!isStringProvided(request.body.receiver) || !isInteger(request.body.receiver)) {
+    if(!isStringProvided(request.body.sender) || !isInteger(request.body.sender) ||!isStringProvided(request.body.receiver)) {
 
         console.log("user info is not provided or is in wrong format");
         response.status(400).send({
@@ -142,7 +151,7 @@ router.post("/sendfriendrequest/", (request, response, next)=> {
 }, (request, response, next) => {
     //check if they exists in the database
     console.log("Checking if the send is in the database")
-    pool.query(`SELECT * FROM members WHERE memberid = $1`, [request.body.receiver])
+    pool.query(`SELECT * FROM members WHERE username = $1`, [request.body.receiver])
         .then((result) => {
             if(result.rowCount <= 0) {
                 console.log("User was not found")
@@ -153,6 +162,7 @@ router.post("/sendfriendrequest/", (request, response, next)=> {
                 })
             } else {
                 console.log("User was found")
+                request.recieverMemberid = result.rows[0].memberid
                 next()
             }
         })
@@ -172,7 +182,7 @@ router.post("/sendfriendrequest/", (request, response, next)=> {
                     SELECT *
                     FROM contacts
                     WHERE memberid_a = $2 AND memberid_b = $1
-                )`, [request.body.sender, request.body.receiver])
+                )`, [request.body.sender, request.recieverMemberid])
         .then((result) => {
             console.log(isInteger(result.rowCount))
             console.log(result.rowCount, "ROW COUNT AFTER SEARCHING")
@@ -199,12 +209,12 @@ router.post("/sendfriendrequest/", (request, response, next)=> {
 , (request, response) => {
     //Registering the friend request
     console.log("Inserting the friend request into the database")
-    pool.query(`Insert into contacts (memberid_a, memberid_b, status) VALUES ($1, $2, 'Pending');`, [request.body.sender, request.body.receiver])
+    pool.query(`Insert into contacts (memberid_a, memberid_b, status) VALUES ($1, $2, 'Pending');`, [request.body.sender, request.recieverMemberid])
         .then((result) => {
             if(result.rowCount == 1) {
                 console.log("Insertion successful")
                 response.send({
-                    receiver: request.body.receiver,
+                    receiver: request.body.username,
                     sender: request.body.sender,
                     message: "Friend request has been sent"
                 })
@@ -222,7 +232,16 @@ router.post("/sendfriendrequest/", (request, response, next)=> {
 })
 
 
-//Delete Contact
+/**
+ * @apiDescription Delete a friend, or to delete to friend request.
+ * required body.user = user itself, because they will be receiving the friend request
+ * required body.friend = the person getting deleted
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ *
+ * @param {Object} request - The request object.
+ * @param {Object} response - The response object.
+ * @param {Function} next - The next middleware function.
+ */
 router.post("/remove/", (request, response, next)=> {
     if(!isStringProvided(request.body.user) || !isStringProvided(request.body.friend) ||!isInteger(request.body.user)|| !isInteger(request.body.friend)) {
         console.log("user info is not provided or is in wrong format");
@@ -282,6 +301,115 @@ router.post("/remove/", (request, response, next)=> {
         });
 })
 
+/**
+ * @apiDescription Accept a friend request.
+ * required body.sender = the person who sent the friend request
+ * required body.reciever = user itself, because they will be receiving the friend request
+ *
+ * Example: if 4 sent a friend request to 3 and 3 is the user trying to accept the friend request then 3 will send this request
+ *  {
+ *      reciever: 3
+ *      sender: 4
+ *  }
+ *
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * @param {Object} request - The request object.
+ * @param {Object} response - The response object.
+ * @param {Function} next - The next middleware function.
+ */
+
+router.post("/acceptfriendrequest/", (request, response, next)=> {
+        console.log(request.body.sender)
+        console.log(request.body.receiver)
+        console.log("Checking if the 2 body params are provided")
+        if(!isStringProvided(request.body.sender) || !isInteger(request.body.sender) ||!isStringProvided(request.body.receiver) || !isInteger(request.body.receiver)) {
+
+            console.log("user info is not provided or is in wrong format");
+            response.status(400).send({
+                message: "Invalid information provided"
+            })
+        } else if(request.body.sender == request.body.receiver){
+            response.status(400).send({
+                message: "User is not allowed to send friend request to themselves"
+            })
+        } else {
+            console.log("User is requesting contacts");
+            next();
+        }
+
+    }, (request, response, next) => {
+        //check if sender exists in the database
+        console.log("Checking if the sender is in the database")
+        pool.query(`SELECT * FROM members WHERE memberid = $1`, [request.body.sender])
+            .then((result) => {
+                if(result.rowCount <= 0) {
+                    console.log("User was not found")
+                    response.staus(400).send({
+                        receiver: request.body.receiver,
+                        sender : request.body.sender,
+                        message: "This user does not exists"
+                    })
+                } else {
+                    console.log("User was found")
+                    next()
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+                response.status(400).send({
+                    message: "Error finding user in the database",
+                    error: error.detail,
+                });
+            });
+    }, (request, response, next) => {
+        //check if they have already sent you a friend request
+        console.log("Searching if the friend request exists")
+        pool.query(`SELECT *
+                FROM contacts
+                WHERE (memberid_a = $1 AND memberid_b = $2)`, [request.body.sender, request.body.receiver])
+            .then((result) => {
+                console.log(isInteger(result.rowCount))
+                console.log(result.rowCount, "ROW COUNT AFTER SEARCHING")
+                if(result.rowCount > 0) {
+                    console.log("friend request was found")
+                    next()
+                } else {
+                    console.log("Friend request was not found")
+                    response.status(400).send({
+                        sender : request.body.sender,
+                        message: "Friend request was not found"
+                    })
+
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+                response.status(400).send({
+                    message: "Error searching member friend's status information",
+                    error: error.detail,
+                });
+            });
+    }, (request, response) => {
+        //Registering the friend request
+        console.log("Inserting the friend acceptance into the database")
+        pool.query(`UPDATE contacts SET status = 'Friends' where memberid_a = $1 AND memberid_b = $2`,
+            [request.body.sender, request.body.receiver])
+            .then((result) => {
+                    console.log("Insertion successful")
+                    response.send({
+                        receiver: request.body.receiver,
+                        sender: request.body.sender,
+                        message: "Friend request has been accepted"
+                    })
+            })
+            .catch((error) => {
+                console.log(error)
+                response.status(400).send({
+                    message: "Error inserting member friend's status information",
+                    error: error.detail,
+                });
+            });
+    })
 
 
 /*
