@@ -277,7 +277,8 @@ router.post("/remove/", (request, response, next)=> {
         });
 }, (request, response, next)=> {
     console.log("Deleting from Contacts")
-    pool.query(`DELETE FROM contacts WHERE memberid_a = $1 OR memberid_b = $1`, [request.body.friend])
+    pool.query(`DELETE FROM contacts WHERE (memberid_a = $1 and memberid_b = $2) OR (memberid_b = $1 and memberid_a = $2)`,
+        [request.body.friend, request.body.user])
         .then((result) => {
             if(result.rowCount <= 0) {
                 console.log("The delete contact request was not successful")
