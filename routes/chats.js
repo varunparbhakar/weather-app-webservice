@@ -56,12 +56,14 @@ router.post("/", (request, response, next) => {
                 chatID:result.rows[0].chatid
             })
         }).catch(err => {
-        response.status(400).send({
-            message: "SQL Error",
-            error: err
-        })
+            console.log(err);
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
 
-    })
+        })
+    ;
 })
 
 /**
