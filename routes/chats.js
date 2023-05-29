@@ -586,7 +586,7 @@ router.post("/createchat/", (request, response, next) => {
               VALUES ($1, $2)
               RETURNING *`
     let numusertwo = Number(request.body.usertwo);
-    let values = [request.chatId, numusertwo]
+    let values = [request.chatid, numusertwo]
     pool.query(insert, values)
         .then(result => {
             response.send({
