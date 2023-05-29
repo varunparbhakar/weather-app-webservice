@@ -41,7 +41,6 @@ let isStringProvided = validation.isStringProvided
  * @apiUse JSONError
  */
 router.post("/", (request, response, next) => {
-    console.log(`first`);
     //validate on empty parameters
     if (request.body.chatId === undefined || !isStringProvided(request.body.message)) {
         response.status(400).send({
@@ -55,7 +54,6 @@ router.post("/", (request, response, next) => {
         next()
     }
 }, (request, response, next) => {
-    console.log(`second`);
     //validate chat id exists
     let query = 'SELECT * FROM CHATS WHERE ChatId=$1'
     let values = [request.body.chatId]
@@ -76,7 +74,6 @@ router.post("/", (request, response, next) => {
         })
     })
 }, (request, response, next) => {
-    console.log(`third`);
     //validate memberid exists in the chat
     let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2'
     let values = [request.body.chatId, request.decoded.memberid]
@@ -98,7 +95,6 @@ router.post("/", (request, response, next) => {
     })
 
 }, (request, response, next) => {
-    console.log(`fourth`);
     //add the message to the database
     let insert = `INSERT INTO Messages(ChatId, Message, MemberId)
                   VALUES($1, $2, $3) 
@@ -125,7 +121,6 @@ router.post("/", (request, response, next) => {
         })
     })
 }, (request, response) => {
-    console.log(`fifth`);
     // send a notification of this message to ALL members with registered tokens
     let query = `SELECT token FROM Push_Token
                         INNER JOIN ChatMembers ON
