@@ -371,7 +371,7 @@ router.get("/id=:chatId", (request, response, next) => {
  *
  * @apiUse JSONError
  */
-router.delete("/:chatId/:email", (request, response, next) => {
+router.delete("/delete/:chatId/:email", (request, response, next) => {
         //validate on empty parameters
         if (!request.params.chatId || !request.params.email) {
             response.status(400).send({
