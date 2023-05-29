@@ -590,7 +590,7 @@ router.post("/createchat/", (request, response, next) => {
         .then(result => {
             response.send({
                 success: true,
-                chatID:request.chatid
+                chatid:request.chatid
             })
         }).catch(err => {
         response.status(400).send({
@@ -600,5 +600,18 @@ router.post("/createchat/", (request, response, next) => {
     })
 }
 )
+
+/*
+ * Checks if given value is an integer
+ */
+function isInteger(str) {
+    // Check if the string is a number.
+    if (isNaN(str)) {
+        return false;
+    }
+    // Check if the string is an integer.
+    return /^\d+$/.test(str);
+}
+
 
 module.exports = router
