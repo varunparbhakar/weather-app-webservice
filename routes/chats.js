@@ -493,13 +493,13 @@ router.delete("/delete/:chatId/:email", (request, response, next) => {
  */
 router.post("/createchat/", (request, response, next) => {
     //validate on empty parameters
-    console.log(!isStringProvided(request.body.userone));
-    console.log(!isStringProvided(request.body.userTwo));
-    console.log(!isStringProvided(request.body.chatname));
+    console.log(!isStringProvided(request.body.userone) + " " + request.body.userone);
+    console.log(!isStringProvided(request.body.usertwo) + " " + request.body.usertwo);
+    console.log(!isStringProvided(request.body.chatname) + " " + request.body.chatname);
     console.log(!isInteger(request.body.userone));
     console.log(!isInteger(request.body.usertwo));
-    console.log(!isStringProvided(request.params.userone));
-    console.log(!isStringProvided(request.params.userTwo));
+    console.log(!isStringProvided(request.params.userone) + " " + request.params.userone);
+    console.log(!isStringProvided(request.params.usertwo) + " " + request.params.userone);
 
     if(!isStringProvided(request.body.userone) || !isStringProvided(request.body.usertwo)
                     || !isInteger(request.body.userone)|| !isInteger(request.body.usertwo)
