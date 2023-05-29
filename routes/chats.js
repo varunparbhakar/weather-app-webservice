@@ -493,14 +493,6 @@ router.delete("/delete/:chatId/:email", (request, response, next) => {
  */
 router.post("/createchat/", (request, response, next) => {
     //validate on empty parameters
-    console.log(!isStringProvided(request.body.userone) + " " + request.body.userone);
-    console.log(!isStringProvided(request.body.usertwo) + " " + request.body.usertwo);
-    console.log(!isStringProvided(request.body.chatname) + " " + request.body.chatname);
-    console.log(!isInteger(request.body.userone));
-    console.log(!isInteger(request.body.usertwo));
-    console.log(!isStringProvided(request.params.userone) + " " + request.params.userone);
-    console.log(!isStringProvided(request.params.usertwo) + " " + request.params.userone);
-
     if(!isStringProvided(request.body.userone) || !isStringProvided(request.body.usertwo)
                     || !isInteger(request.body.userone)|| !isInteger(request.body.usertwo)
                     || !isStringProvided(request.body.chatname)) {
@@ -529,7 +521,7 @@ router.post("/createchat/", (request, response, next) => {
             }
         }).catch(error => {
         response.status(400).send({
-            message: "SQL Error",
+            message: "SQL Error: userone",
             error: error
         })
     })
@@ -552,7 +544,7 @@ router.post("/createchat/", (request, response, next) => {
             }
         }).catch(error => {
         response.status(400).send({
-            message: "SQL Error",
+            message: "SQL Error: usertwo",
             error: error
         })
     })
@@ -569,7 +561,7 @@ router.post("/createchat/", (request, response, next) => {
             next();
         }).catch(err => {
         response.status(400).send({
-            message: "SQL Error",
+            message: "SQL Error: chat insert",
             error: err
         })
     })
@@ -584,7 +576,7 @@ router.post("/createchat/", (request, response, next) => {
             next();
         }).catch(err => {
         response.status(400).send({
-            message: "SQL Error",
+            message: "SQL Error: insert userone into chat",
             error: err
         })
     })
@@ -602,7 +594,7 @@ router.post("/createchat/", (request, response, next) => {
             })
         }).catch(err => {
         response.status(400).send({
-            message: "SQL Error",
+            message: "SQL Error: insert usertwo into chat",
             error: err
         })
     })
