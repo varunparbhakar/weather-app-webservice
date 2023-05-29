@@ -467,4 +467,135 @@ router.delete("/:chatId/:email", (request, response, next) => {
     }
 )
 
+/**
+ * @api {post} /chats/createchat/ Make a chat with two users
+ * @apiName CreateChat
+ * @apiGroup Chats
+ *
+ * @apiDescription Adds the user associated with the required JWT.
+ *
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ *
+ * @apiParam {Number} chatId the chat to add the user to
+ *
+ * @apiSuccess {boolean} success true when the name is inserted
+ *
+ * @apiError (404: User Not Found) {String} message "User not found"
+ * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number"
+ * @apiError (400: Duplicate Email) {String} message "user already joined"
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ *
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ *
+ * @apiUse JSONError
+ */
+router.post("/createchat/", (request, response, next) => {
+    //validate on empty parameters
+    if(!isStringProvided(request.body.userone) || !isStringProvided(request.body.usertwo)
+                    || !isInteger(request.body.userone)|| !isInteger(request.body.usertwo)
+                    || !isStringProvided(request.body.chatname)) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else {
+        next()
+    }
+}, (request, response, next) => {
+    //validate email exists
+    let query = 'SELECT * FROM Members WHERE MemberId=$1'
+    let values = [request.decoded.memberid]
+
+    console.log(request.decoded)
+
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "email not found"
+                })
+            } else {
+                //user found
+                next()
+            }
+        }).catch(error => {
+        response.status(400).send({
+            message: "SQL Error",
+            error: error
+        })
+    })
+},(request, response, next) => {
+    //validate email exists
+    let query = 'SELECT * FROM Members WHERE MemberId=$1'
+    let values = [request.body.usertwo]
+
+    console.log(request.body.usertwo)
+
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "email not found"
+                })
+            } else {
+                //user found
+                next()
+            }
+        }).catch(error => {
+        response.status(400).send({
+            message: "SQL Error",
+            error: error
+        })
+    })
+}, (request, response, next) => {
+    //create chat
+
+    let insert = `INSERT INTO Chats(Name)
+                  VALUES ($1)
+                  RETURNING ChatId`
+    let values = [request.body.chatname]
+    pool.query(insert, values)
+        .then(result => {
+            request.chatid = result.rows[0].chatid;
+            next();
+        }).catch(err => {
+        response.status(400).send({
+            message: "SQL Error",
+            error: err
+        })
+    })
+}, (request, response, next) => {
+    //Insert the memberId into the chat
+    let insert = `INSERT INTO ChatMembers(ChatId, MemberId)
+              VALUES ($1, $2)
+              RETURNING *`
+    let values = [request.chatid, request.decoded.memberid]
+    pool.query(insert, values)
+        .then(result => {
+            next();
+        }).catch(err => {
+        response.status(400).send({
+            message: "SQL Error",
+            error: err
+        })
+    })
+}, (request, response) => {
+    //Insert the memberId into the chat
+    let insert = `INSERT INTO ChatMembers(ChatId, MemberId)
+              VALUES ($1, $2)
+              RETURNING *`
+    let values = [request.params.chatId, request.body.usertwo]
+    pool.query(insert, values)
+        .then(result => {
+            response.send({
+                success: true
+            })
+        }).catch(err => {
+        response.status(400).send({
+            message: "SQL Error",
+            error: err
+        })
+    })
+}
+)
+
 module.exports = router
