@@ -594,6 +594,7 @@ router.post("/createchat/", (request, response, next) => {
                 chatid:request.chatid
             })
         }).catch(err => {
+            console.log(err);
         response.status(400).send({
             message: "SQL Error: insert usertwo into chat",
             error: err
