@@ -9,18 +9,26 @@ const pool = require("../utilities/exports").pool;
 const validation = require("../utilities/exports").validation;
 let isStringProvided = validation.isStringProvided;
 
+
 /**
- * @apiDescription Add a favorite location
- * required body.user = user itself (user id)
- * required body.nickname = the person getting the friend request
- * required body.lat = the person getting the friend request
- * required body.long = the person getting the friend request
- * required body.zip = the person getting the friend request
- * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * @api {get} /addfavorite Add favorite weather location
+ * @apiName AddFavorite
+ * @apiGroup Weather
  *
- * @param {Object} request - The request object.
- * @param {Object} response - The response object.
- * @param {Function} next - The next middleware function.
+ * @apiDescription Add a favorite location
+ *
+ * @apiParam {String} zip zipcode or city name for weather retrieval
+ * @apiParam {String} user memberID of user making request
+ * @apiParam {String} nickname user making request
+ * @apiParam {String} lat latitude of location
+ * @apiParam {String} long longitude of location
+ *
+ * @apiSuccess (Success 200) {boolean} success true when the name is inserted
+ *
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * 
+ * @apiError (400: External Service Error) {String} message "External weather service error"
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
  */
 router.post("/addfavorite/", (request, response, next)=> {
         console.log(request.body.user);
@@ -127,17 +135,24 @@ router.post("/addfavorite/", (request, response, next)=> {
     })
 
 /**
- * @apiDescription Removing a favorite location
- * required body.user = user itself (user id)
- * required body.nickname = the person getting the friend request
- * required body.lat = the person getting the friend request
- * required body.long = the person getting the friend request
- * required body.zip = the person getting the friend request
- * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * @api {get} /removefavorite Remove favorite weather location
+ * @apiName RemoveFavorite
+ * @apiGroup Weather
  *
- * @param {Object} request - The request object.
- * @param {Object} response - The response object.
- * @param {Function} next - The next middleware function.
+ * @apiDescription Remove a favorite location
+ *
+ * @apiParam {String} zip zipcode or city name for weather retrieval
+ * @apiParam {String} user memberID of user making request
+ * @apiParam {String} nickname user making request
+ * @apiParam {String} lat latitude of location
+ * @apiParam {String} long longitude of location
+ *
+ * @apiSuccess (Success 200) {boolean} success true when the name is inserted
+ *
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * 
+ * @apiError (400: External Service Error) {String} message "External weather service error"
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
  */
 router.post("/removefavorite/", (request, response, next)=> {
     console.log(request.body.user);
@@ -203,17 +218,24 @@ router.post("/removefavorite/", (request, response, next)=> {
 })
 
 /**
- * @apiDescription Get every single favorite location
- * required body.user = user itself (user id)
- * required body.nickname = the person getting the friend request
- * required body.lat = the person getting the friend request
- * required body.long = the person getting the friend request
- * required body.zip = the person getting the friend request
- * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * @api {get} /getall Get favorite weather locations
+ * @apiName GetFavorite
+ * @apiGroup Weather
  *
- * @param {Object} request - The request object.
- * @param {Object} response - The response object.
- * @param {Function} next - The next middleware function.
+ * @apiDescription Get favorite locations
+ *
+ * @apiParam {String} zip zipcode or city name for weather retrieval
+ * @apiParam {String} user memberID of user making request
+ * @apiParam {String} nickname user making request
+ * @apiParam {String} lat latitude of location
+ * @apiParam {String} long longitude of location
+ *
+ * @apiSuccess (Success 200) {boolean} success true when the name is inserted
+ *
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * 
+ * @apiError (400: External Service Error) {String} message "External weather service error"
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
  */
 router.get("/getall/", (request, response, next)=> {
     console.log(request.query.user);

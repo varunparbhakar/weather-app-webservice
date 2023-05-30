@@ -21,7 +21,7 @@ const router = express.Router();
  */
 
 /**
- * @api {get} forgot password functionality
+ * @api {get} /recovery forgot password functionality
  * @apiName PasswordRecovery
  * @apiGroup Password
  *
@@ -129,7 +129,7 @@ router.get("/recovery/:username", (request, response, next)=> {
 })
 
 /**
- * @api {post} Change the password
+ * @api {post} /changepass Change the password
  * @apiName PasswordChange
  * @apiGroup Password
  *
