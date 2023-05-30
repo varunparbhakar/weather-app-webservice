@@ -20,7 +20,7 @@ const router = express.Router();
  */
 
 /**
- * @api {get} /contacts Retrieve mutual friends.
+ * @api {get} /contacts/getfriends Retrieve mutual friends.
  * @apiName GetFriends
  * @apiGroup Contacts
  *
@@ -71,7 +71,7 @@ router.get("/getfriends/:user", (request, response, next)=> {
 })
 
 /**
- * @api {get} /contacts Retrieve incoming friend requests.
+ * @api {get} /contacts/getrequests Retrieve incoming friend requests.
  * @apiName GetPending
  * @apiGroup Contacts
  *
@@ -121,7 +121,7 @@ router.get("/getrequests/", (request, response, next)=> {
 })
 
 /**
- * @api {post} /contacts Send friend requests.
+ * @api {post} /contacts/sendfriendrequest Send friend requests.
  * @apiDescription Sends friend request to user with proper memberID.
  * @apiName SendFriendRequest
  * @apiHeader {String} authorization Valid JSON Web Token JWT
@@ -238,7 +238,7 @@ router.post("/sendfriendrequest/", (request, response, next)=> {
 })
 
 /**
- * @api {post} /contacts Delete friends.
+ * @api {post} /contacts/remove Delete friends.
  * @apiDescription Delete a friend, or to delete to friend request.
  * @apiName DeleteFriend
  * @apiGroup Contacts
@@ -311,7 +311,7 @@ router.post("/remove/", (request, response, next)=> {
 })
 
 /**
-* @api {post} /contacts Accept friend request.
+* @api {post} /contacts/acceptfriendrequest Accept friend request.
  * @apiDescription Accept a friend request.
  * @apiName AcceptRequest
  * @apiGroup Contacts

@@ -11,7 +11,7 @@ let isStringProvided = validation.isStringProvided;
 
 
 /**
- * @api {get} /addfavorite Add favorite weather location
+ * @api {get} /location/addfavorite Add favorite weather location
  * @apiName AddFavorite
  * @apiGroup Weather
  *
@@ -135,7 +135,7 @@ router.post("/addfavorite/", (request, response, next)=> {
     })
 
 /**
- * @api {get} /removefavorite Remove favorite weather location
+ * @api {get} /location/removefavorite Remove favorite weather location
  * @apiName RemoveFavorite
  * @apiGroup Weather
  *
@@ -218,7 +218,7 @@ router.post("/removefavorite/", (request, response, next)=> {
 })
 
 /**
- * @api {get} /getall Get favorite weather locations
+ * @api {get} /location/getall Get favorite weather locations
  * @apiName GetFavorite
  * @apiGroup Weather
  *
