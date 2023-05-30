@@ -119,15 +119,21 @@ router.get("/getrequests/", (request, response, next)=> {
             });
         });
 })
+
 /**
- * @apiDescription Send a friend request
- * required body.sender = user itself
- * required body.reciever = the person getting the friend request
+ * @api {post} /contacts Send friend requests.
+ * @apiDescription Sends friend request to user with proper memberID.
+ * @apiName SendFriendRequest
  * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * @apiGroup Contacts
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * @apiSuccess (Success 200) {List} List List of users which have pending invitations to be friends of the supplied user.
  *
- * @param {Object} request - The request object.
- * @param {Object} response - The response object.
- * @param {Function} next - The next middleware function.
+ * @apiError (400: Invalid Parameters) {String} message "Invalid information provided"
+ * @apiError (400: SQL Error) {String} message "Error retrieving member information"
+ * 
+ * @apiParam {String} sender MemberID of user making the request.
+ * @apiParam {String} receiver MemberID of user receiving the request.
  */
 router.post("/sendfriendrequest/", (request, response, next)=> {
     console.log(request.body.sender)
@@ -231,16 +237,19 @@ router.post("/sendfriendrequest/", (request, response, next)=> {
         });
 })
 
-
 /**
+ * @api {post} /contacts Delete friends.
  * @apiDescription Delete a friend, or to delete to friend request.
- * required body.user = user itself, because they will be receiving the friend request
- * required body.friend = the person getting deleted
+ * @apiName DeleteFriend
+ * @apiGroup Contacts
  * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * @apiSuccess (Success 200) {Boolean} If removal was successful.
  *
- * @param {Object} request - The request object.
- * @param {Object} response - The response object.
- * @param {Function} next - The next middleware function.
+ * @apiError (400: Invalid Parameters) {String} message "Invalid information provided"
+ * @apiError (400: SQL Error) {String} message "Error retrieving member information"
+ * 
+ * @apiParam {String} sender MemberID of user making the request.
+ * @apiParam {String} receiver MemberID of user to delete.
  */
 router.post("/remove/", (request, response, next)=> {
     if(!isStringProvided(request.body.user) || !isStringProvided(request.body.friend) ||!isInteger(request.body.user)|| !isInteger(request.body.friend)) {
@@ -275,7 +284,7 @@ router.post("/remove/", (request, response, next)=> {
                 error: error.detail,
             });
         });
-}, (request, response, next)=> {
+}, (request, response)=> {
     console.log("Deleting from Contacts")
     pool.query(`DELETE FROM contacts WHERE (memberid_a = $1 and memberid_b = $2) OR (memberid_b = $1 and memberid_a = $2)`,
         [request.body.friend, request.body.user])
@@ -290,7 +299,6 @@ router.post("/remove/", (request, response, next)=> {
                 response.send({
                     message: "The delete contact request was successful"
                 })
-                next()
             }
         })
         .catch((error) => {
@@ -303,7 +311,17 @@ router.post("/remove/", (request, response, next)=> {
 })
 
 /**
+* @api {post} /contacts Accept friend request.
  * @apiDescription Accept a friend request.
+ * @apiName AcceptRequest
+ * @apiGroup Contacts
+ * @apiSuccess (Success 200) {Boolean} If accept was successful.
+ *
+ * @apiError (400: Invalid Parameters) {String} message "Invalid information provided"
+ * @apiError (400: SQL Error) {String} message "Error retrieving member information"
+ * 
+ * @apiParam {String} sender MemberID of user making the request.
+ * @apiParam {String} receiver MemberID of user to delete.
  * required body.sender = the person who sent the friend request
  * required body.reciever = user itself, because they will be receiving the friend request
  *
@@ -314,9 +332,6 @@ router.post("/remove/", (request, response, next)=> {
  *  }
  *
  * @apiHeader {String} authorization Valid JSON Web Token JWT
- * @param {Object} request - The request object.
- * @param {Object} response - The response object.
- * @param {Function} next - The next middleware function.
  */
 
 router.post("/acceptfriendrequest/", (request, response, next)=> {

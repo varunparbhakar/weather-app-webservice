@@ -22,10 +22,20 @@ const router = express.Router();
 
 /**
  * @api {get} forgot password functionality
- * @apiName recovery
+ * @apiName PasswordRecovery
  * @apiGroup Password
  *
  * @apiDescription Sends a password reset email to the user
+ *
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ *
+ * @apiParam {String} User MemberID of user making the request.
+ *
+ * @apiSuccess (Success 200) {Message} Email was sent to user.
+ *
+ * @apiError (400: Invalid Parameters) {String} message "Invalid information provided"
+ *
+ * @apiError (400: SQL Error) {String} message "Error retrieving member information"
  */
 router.get("/recovery/:username", (request, response, next)=> {
     /*
@@ -119,16 +129,22 @@ router.get("/recovery/:username", (request, response, next)=> {
 })
 
 /**
- * @apiDefine JSONError
- * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
- */
-
-/**
  * @api {post} Change the password
- * @apiName recovery
+ * @apiName PasswordChange
  * @apiGroup Password
  *
- * @apiDescription Sends a password reset email to the user
+ * @apiDescription Changes user password to new supplied password
+ *
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ *
+ * @apiParam {String} oldpass Current password of the user making the request.
+ * @apiParam {String} newpass New password of the user making the request.
+ *
+ * @apiSuccess (Success 200) {Message} Email was sent to user.
+ *
+ * @apiError (400: Invalid Parameters) {String} message "Invalid information provided"
+ *
+ * @apiError (400: SQL Error) {String} message "Error retrieving member information"
  */
 router.post("/changepass", (request, response, next)=> {
     /*
