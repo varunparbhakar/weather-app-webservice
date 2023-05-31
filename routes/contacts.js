@@ -97,7 +97,7 @@ router.get("/getrequests/", (request, response, next)=> {
         console.log("User is requesting contacts");
         next();
     }
-}, (request, response, next)=> {
+}, (request, response)=> {
     console.log(request.query.user)
     pool.query(`
         SELECT memberid, firstname, lastname, username, email 
@@ -108,7 +108,11 @@ router.get("/getrequests/", (request, response, next)=> {
                 console.log("Nothing was returned")
             } else {
                 console.log("Returning the friend's requests list")
-                response.send(result.rows)
+                // response.send(result.rows)
+                response.json({
+                    message: "get/contacts/getrequests successful!",
+                    friendRequests: result.rows
+                })
             }
         })
         .catch((error) => {
