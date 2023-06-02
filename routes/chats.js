@@ -214,6 +214,8 @@ router.put("/:chatId/", (request, response, next) => {
  */
 router.put("/:chatId/:email/", (request, response, next) => {
         //validate on empty parameters
+        console.log('step 1');
+
         if (!request.params.chatId) {
             response.status(400).send({
                 message: "Missing required information"
@@ -229,6 +231,7 @@ router.put("/:chatId/:email/", (request, response, next) => {
         //validate chat id exists
         let query = 'SELECT * FROM CHATS WHERE ChatId=$1'
         let values = [request.params.chatId]
+        console.log('step 2');
 
         pool.query(query, values)
             .then(result => {
@@ -250,8 +253,7 @@ router.put("/:chatId/:email/", (request, response, next) => {
         //validate email exists
         let query = 'SELECT * FROM Members WHERE Email=$1'
         let values = [request.params.email]
-
-        console.log(request.params);
+        console.log('step 3');
 
         pool.query(query, values)
             .then(result => {
@@ -272,8 +274,9 @@ router.put("/:chatId/:email/", (request, response, next) => {
         })
     }, (request, response, next) => {
         //validate email does not already exist in the chat
-        let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2'
-        let values = [request.params.chatId, result.memberid]
+        let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2';
+        let values = [request.params.chatId, result.memberid];
+        console.log("step 4");
 
         pool.query(query, values)
             .then(result => {
@@ -293,6 +296,8 @@ router.put("/:chatId/:email/", (request, response, next) => {
 
     }, (request, response) => {
         //Insert the memberId into the chat
+        console.log('step 5');
+        
         let insert = `INSERT INTO ChatMembers(ChatId, MemberId)
                   VALUES ($1, $2)
                   RETURNING *`
