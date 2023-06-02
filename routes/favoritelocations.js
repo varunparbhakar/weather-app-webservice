@@ -33,16 +33,10 @@ let isStringProvided = validation.isStringProvided;
 router.post("/addfavorite/", (request, response, next)=> {
         console.log(request.body.user);
         console.log(request.body.nickname);
-        console.log(request.body.lat);
-        console.log(request.body.long);
-        console.log(request.body.zip);
 
         console.log("Checking if the body params are provided")
         if(!isStringProvided(request.body.user) || !isInteger(request.body.user)
             ||!isStringProvided(request.body.nickname)
-            ||!isStringProvided(request.body.lat) || !isLat(request.body.lat)
-            ||!isStringProvided(request.body.long) || !isLong(request.body.long)
-            ||!isStringProvided(request.body.zip) || !isZipCode(request.body.zip)
         ) {
 
             console.log("user info is not provided or is in wrong format");
@@ -79,46 +73,17 @@ router.post("/addfavorite/", (request, response, next)=> {
                     error: error.detail,
                 });
             });
-    }, (request, response, next) => {
-    //check if they exists in the database
-    console.log("Checking if long and LAT is already taken for this user")
-    pool.query(`SELECT * FROM locations WHERE lat = $1 AND long = $2 AND memberid = $3`, [request.body.lat, request.body.long, request.body.user])
-        .then((result) => {
-            if(result.rowCount <= 0) {
-                console.log("Long and Lat is not taken for this user")
-                next()
-
-            } else {
-                console.log("Long and Lat is taken for this user")
-                response.status(400).send({
-                    user: request.body.user,
-                    lat : request.body.lat,
-                    long : request.body.long,
-                    message: "Long and Lat is taken for this user"
-                })
-            }
-        })
-        .catch((error) => {
-            console.log(error)
-            response.status(400).send({
-                message: "Error finding user in the database",
-                error: error.detail,
-            });
-        });
 }, (request, response) => {
     //Insert the data into the database
     console.log("Inserting the database into the database")
-    pool.query(`INSERT into locations (memberid, lat, long, zip) VALUES ($1,$2, $3, $4);`,
-        [request.body.user, request.body.lat, request.body.long, request.body.zip])
+    pool.query(`INSERT into locations (memberid, nickname) VALUES ($1, $2);`,
+        [request.body.user, request.body.nickname])
         .then((result) => {
                 if(result.rowCount == 1) {
                     console.log("Insertion successful")
                     response.send({
-                        user: request.body.receiver,
-                        nickname: request.body.receiver,
-                        lat: request.body.sender,
-                        long: request.body.receiver,
-                        zip: request.body.sender,
+                        user: request.body.user,
+                        nickname: request.body.nickname,
                         message: "Your favorite location has been logged in the database"
                     })
                 } else {
@@ -237,7 +202,7 @@ router.post("/removefavorite/", (request, response, next)=> {
  * @apiError (400: External Service Error) {String} message "External weather service error"
  * @apiHeader {String} authorization Valid JSON Web Token JWT
  */
-router.get("/getall/:user", (request, response, next)=> {
+router.get("/getall/", (request, response, next)=> {
     console.log(request.query.user);
 
     console.log("Checking if the body params are provided")
@@ -256,7 +221,7 @@ router.get("/getall/:user", (request, response, next)=> {
 }, (request, response, next) => {
     //check if they exists in the database
     console.log("Checking if nickname is already taken for this user")
-    pool.query(`SELECT nickname, lat, long, zip FROM locations WHERE  memberid = $1`, [request.query.user])
+    pool.query(`SELECT nickname FROM locations WHERE memberid = $1`, [request.query.user])
         .then((result) => {
             if(result.rowCount <= 0) {
                 console.log("No locations were found for this user")
