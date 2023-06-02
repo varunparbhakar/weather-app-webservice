@@ -188,6 +188,129 @@ router.put("/:chatId/", (request, response, next) => {
 )
 
 /**
+ * @api {put} /chats/:chatId?/:email? Request add another user to a chat
+ * @apiName PutChats
+ * @apiGroup Chats
+ *
+ * @apiDescription Adds the user associated with the required email.
+ *
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ *
+ * @apiParam {Number} chatId the chat to add the user to
+ * @apiParam {String} email the email of user to add
+ *
+ * @apiSuccess {boolean} success true when the name is inserted
+ *
+ * @apiError (404: Chat Not Found) {String} message "chatID not found"
+ * @apiError (404: Email Not Found) {String} message "email not found"
+ * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number"
+ * @apiError (400: Duplicate Email) {String} message "user already joined"
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ *
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ *
+ * @apiUse JSONError
+ */
+router.put("/:chatId/:email/", (request, response, next) => {
+        //validate on empty parameters
+        if (!request.params.chatId) {
+            response.status(400).send({
+                message: "Missing required information"
+            })
+        } else if (isNaN(request.params.chatId)) {
+            response.status(400).send({
+                message: "Malformed parameter. chatId must be a number"
+            })
+        } else {
+            next()
+        }
+    }, (request, response, next) => {
+        //validate chat id exists
+        let query = 'SELECT * FROM CHATS WHERE ChatId=$1'
+        let values = [request.params.chatId]
+
+        pool.query(query, values)
+            .then(result => {
+                if (result.rowCount == 0) {
+                    response.status(404).send({
+                        message: "Chat ID not found"
+                    })
+                } else {
+                    next()
+                }
+            }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+        //code here based on the results of the query
+    }, (request, response, next) => {
+        //validate email exists
+        let query = 'SELECT * FROM Members WHERE Email=$1'
+        let values = [request.params.memberid]
+
+        console.log(request.params);
+
+        pool.query(query, values)
+            .then(result => {
+                if (result.rowCount == 0) {
+                    response.status(404).send({
+                        message: "email not found"
+                    })
+                } else {
+                    //user found
+                    result.memberId = result.rows[0].memberid;
+                    next()
+                }
+            }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+    }, (request, response, next) => {
+        //validate email does not already exist in the chat
+        let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2'
+        let values = [request.params.chatId, result.memberid]
+
+        pool.query(query, values)
+            .then(result => {
+                if (result.rowCount > 0) {
+                    response.status(400).send({
+                        message: "user already joined"
+                    })
+                } else {
+                    next()
+                }
+            }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+
+    }, (request, response) => {
+        //Insert the memberId into the chat
+        let insert = `INSERT INTO ChatMembers(ChatId, MemberId)
+                  VALUES ($1, $2)
+                  RETURNING *`
+        let values = [request.params.chatId, result.memberId]
+        pool.query(insert, values)
+            .then(result => {
+                response.send({
+                    success: true
+                })
+            }).catch(err => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: err
+            })
+        })
+    }
+)
+
+/**
  * @api {get} /chats/memberId=:memberId? Request to get the chats a user is in
  * @apiName GetChats
  * @apiGroup Chats
