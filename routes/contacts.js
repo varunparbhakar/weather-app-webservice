@@ -106,6 +106,9 @@ router.get("/getrequests/", (request, response, next)=> {
         .then((result) => {
             if(result.rowCount == 0) {
                 console.log("Nothing was returned")
+                response.json({
+                    message: "no current requests",
+                })
             } else {
                 console.log("Returning the friend's requests list")
                 // response.send(result.rows)
