@@ -606,8 +606,7 @@ router.delete("/delete/:chatId/:email", (request, response, next) => {
  * @apiSuccess {boolean} success true when the name is inserted
  *
  * @apiError (404: User Not Found) {String} message "User not found"
- * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. chatId must be a number"
- * @apiError (400: Duplicate Email) {String} message "user already joined"
+ * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. user must be a number"
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  *
  * @apiError (400: SQL Error) {String} message the reported SQL error details
@@ -617,8 +616,8 @@ router.delete("/delete/:chatId/:email", (request, response, next) => {
 router.post("/createchat/", (request, response, next) => {
     //validate on empty parameters
     if(!isStringProvided(request.body.userone) || !isStringProvided(request.body.usertwo)
-                    || !isInteger(request.body.userone)|| !isInteger(request.body.usertwo)
-                    || !isStringProvided(request.body.chatname)) {
+                    || !isInteger(request.body.userone)|| !isInteger(request.body.usertwo)) {
+                    // || !isStringProvided(request.body.chatname)) {
         response.status(400).send({
             message: "Missing required information"
         })
@@ -640,11 +639,12 @@ router.post("/createchat/", (request, response, next) => {
                 })
             } else {
                 //user found
+                request.firstusername = result.rows[0].username;
                 next()
             }
         }).catch(error => {
         response.status(400).send({
-            message: "SQL Error",
+            message: "SQL Error: userone",
             error: error
         })
     })
@@ -663,28 +663,29 @@ router.post("/createchat/", (request, response, next) => {
                 })
             } else {
                 //user found
+                request.secondusername = result.rows[0].username;
                 next()
             }
         }).catch(error => {
         response.status(400).send({
-            message: "SQL Error",
+            message: "SQL Error: usertwo",
             error: error
         })
     })
 }, (request, response, next) => {
     //create chat
-
     let insert = `INSERT INTO Chats(Name)
                   VALUES ($1)
                   RETURNING ChatId`
-    let values = [request.body.chatname]
+    let chatname = request.firstusername + "," + request.secondusername;
+    let values = [chatname] //request.body.
     pool.query(insert, values)
         .then(result => {
             request.chatid = result.rows[0].chatid;
             next();
         }).catch(err => {
         response.status(400).send({
-            message: "SQL Error",
+            message: "SQL Error: chat insert",
             error: err
         })
     })
@@ -699,7 +700,7 @@ router.post("/createchat/", (request, response, next) => {
             next();
         }).catch(err => {
         response.status(400).send({
-            message: "SQL Error",
+            message: "SQL Error: insert userone into chat",
             error: err
         })
     })
@@ -708,20 +709,35 @@ router.post("/createchat/", (request, response, next) => {
     let insert = `INSERT INTO ChatMembers(ChatId, MemberId)
               VALUES ($1, $2)
               RETURNING *`
-    let values = [request.params.chatId, request.body.usertwo]
+    let numusertwo = Number(request.body.usertwo);
+    let values = [request.chatid, numusertwo]
     pool.query(insert, values)
         .then(result => {
             response.send({
                 success: true,
-                chatID:request.chatid
+                chatid:request.chatid
             })
         }).catch(err => {
+            console.log(err);
         response.status(400).send({
-            message: "SQL Error",
+            message: "SQL Error: insert usertwo into chat",
             error: err
         })
     })
 }
 )
+
+/*
+ * Checks if given value is an integer
+ */
+function isInteger(str) {
+    // Check if the string is a number.
+    if (isNaN(str)) {
+        return false;
+    }
+    // Check if the string is an integer.
+    return /^\d+$/.test(str);
+}
+
 
 module.exports = router
