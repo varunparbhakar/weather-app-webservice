@@ -202,7 +202,7 @@ router.post("/removefavorite/", (request, response, next)=> {
  * @apiError (400: External Service Error) {String} message "External weather service error"
  * @apiHeader {String} authorization Valid JSON Web Token JWT
  */
-router.get("/getall/:user", (request, response, next)=> {
+router.get("/getall/", (request, response, next)=> {
     console.log(request.query.user);
 
     console.log("Checking if the body params are provided")
