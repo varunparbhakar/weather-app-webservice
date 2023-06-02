@@ -274,8 +274,8 @@ router.put("/:chatId/:email/", (request, response, next) => {
         })
     }, (request, response, next) => {
         //validate email does not already exist in the chat
-        let query = 'SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2';
-        let values = [request.params.chatId, result.memberid];
+        let query = `SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=${result.memberId}'})`;
+        let values = [request.params.chatId];
         console.log("step 4");
 
         pool.query(query, values)
@@ -297,11 +297,11 @@ router.put("/:chatId/:email/", (request, response, next) => {
     }, (request, response) => {
         //Insert the memberId into the chat
         console.log('step 5');
-        
+
         let insert = `INSERT INTO ChatMembers(ChatId, MemberId)
-                  VALUES ($1, $2)
+                  VALUES ($1, ${result.memberId})
                   RETURNING *`
-        let values = [request.params.chatId, result.memberId]
+        let values = [request.params.chatId]
         pool.query(insert, values)
             .then(result => {
                 response.send({
