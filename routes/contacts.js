@@ -46,13 +46,16 @@ router.get("/getfriends/:user", (request, response, next)=> {
         console.log("User is requesting contacts");
         next();
     }
-}, (request, response, next)=> {
+}, (request, response)=> {
     pool.query(`SELECT memberid, firstname, lastname, username, email from members WHERE memberid IN (SELECT memberid_a FROM contacts WHERE memberid_b = $1 AND status = 'Friends'
                                           UNION
                                           SELECT memberid_b FROM contacts WHERE memberid_a = $1 AND status = 'Friends' )`, [request.params.user])
         .then((result) => {
             if(result.rowCount == 0) {
                 console.log("Nothing was returned")
+                response.json({
+                    message: "no current requests",
+                })
             } else {
                 console.log("Returning the friend's list")
                 response.json({
