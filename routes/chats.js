@@ -175,8 +175,9 @@ router.put("/:chatId/", (request, response, next) => {
         let values = [request.params.chatId, request.decoded.memberid]
         pool.query(insert, values)
             .then(result => {
-                response.send({
-                    success: true
+                response.json({
+                    success: true,
+                    email: request.params.email
                 })
             }).catch(err => {
             response.status(400).send({
@@ -248,7 +249,7 @@ router.put("/:chatId/:email/", (request, response, next) => {
     }, (request, response, next) => {
         //validate email exists
         let query = 'SELECT * FROM Members WHERE Email=$1'
-        let values = [request.params.memberid]
+        let values = [request.params.email]
 
         console.log(request.params);
 
