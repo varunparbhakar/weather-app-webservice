@@ -263,7 +263,7 @@ router.put("/:chatId/:email/", (request, response, next) => {
                     })
                 } else {
                     //user found
-                    result.memberId = result.rows[0].memberid;
+                    response.memberId = result.rows[0].memberid;
                     next()
                 }
             }).catch(error => {
@@ -274,8 +274,8 @@ router.put("/:chatId/:email/", (request, response, next) => {
         })
     }, (request, response, next) => {
         //validate email does not already exist in the chat
-        let query = `SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=${result.memberId}'})`;
-        let values = [request.params.chatId];
+        let query = `SELECT * FROM ChatMembers WHERE ChatId=$1 AND MemberId=$2`;
+        let values = [request.params.chatId, response.memberId];
         console.log("step 4");
 
         pool.query(query, values)
@@ -299,9 +299,9 @@ router.put("/:chatId/:email/", (request, response, next) => {
         console.log('step 5');
 
         let insert = `INSERT INTO ChatMembers(ChatId, MemberId)
-                  VALUES ($1, ${result.memberId})
-                  RETURNING *`
-        let values = [request.params.chatId]
+                  VALUES ($1, $2)
+                  RETURNING *`;
+        let values = [request.params.chatId, response.memberId];
         pool.query(insert, values)
             .then(result => {
                 response.send({
