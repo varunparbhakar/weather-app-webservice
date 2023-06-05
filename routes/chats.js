@@ -429,7 +429,7 @@ router.get("/:chatId", (request, response, next) => {
             error: error
         })
     })
-}, (request, response, next) => {
+}, (request, response) => {
     console.log("started: retrieve the members");
     //Retrieve the members
     let query = `SELECT Members.Email FROM ChatMembers INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId WHERE ChatId=$1`
@@ -442,33 +442,10 @@ router.get("/:chatId", (request, response, next) => {
                 })
             } else {
                 response.emails = result.rows.map(row => row.email);
-                next();
-            }
-        }).catch(err => {
-        response.status(400).send({
-            message: "SQL Error",
-            error: err
-        })
-    })
-}, (request, response) => {
-    console.log("started: Retrieve the top message");
-    //Retrieve the top message
-    let query = `SELECT message FROM messages WHERE chatid = $1 ORDER BY primarykey DESC LIMIT 1`;
-    let values = [request.params.chatId];
-
-    pool.query(query, values)
-        .then(result => {
-            if (result.rowCount == 0) {
-                response.status(404).send({
-                    message: "Top message not found"
-                })
-            } else {
-                response.topMessage = result.rows[0].message;
                 response.json({
                     success: true,
-                    message: "get/chats email and top message successful!",
-                    email: response.emails,
-                    topMessage: response.topMessage
+                    message: "get/chats emails successful!",
+                    email: response.emails
                 });
             }
         }).catch(err => {
