@@ -357,7 +357,9 @@ router.get("/memberId=:memberId", (request, response, next) => {
     pool.query(query, values)
         .then(result => {
             if (result.rowCount == 0) {
-                response.send("no chats found");
+                response.json({
+                    message: "no chat found"
+                });
             } else {
                 response.json({
                     message: "Retrieved chats successfully",
